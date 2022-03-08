@@ -43,7 +43,7 @@ func New(bootUrls []string) *Crawler {
 }
 
 // Start crawling.
-func (c *Crawler) Run() error {
+func (c *Crawler) Run(out chan<- *enode.Node) error {
 	if err := c.setupDiscovery(); err != nil {
 		return err
 	}
@@ -69,13 +69,11 @@ func (c *Crawler) Run() error {
 		if err != nil {
 			// If it's not alive, log and skip to the next node. We don't have
 			// to return an error here to the upper level in the call stack.
-			log.Printf("found unalive node\tid=%s", n.ID().TerminalString())
+			log.Printf("found unalive node\t\tid=%s", n.ID().TerminalString())
 			continue
 		}
-		log.Printf("found alive node\tid=%s", n.ID().TerminalString())
-		// TODO: Send the node back to the caller
-		_ = nn
-
+		log.Printf("found alive node\t\tid=%s", n.ID().TerminalString())
+		out <- nn
 	}
 
 	iter.Close()
