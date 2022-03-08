@@ -31,7 +31,7 @@ func TestNew(t *testing.T) {
 	if n == nil {
 		t.Error("New returns nil")
 	}
-	if len(n.bootstrapNodes) == 0 {
+	if len(n.config.BootNodes) == 0 {
 		t.Error("New doesn't create any bootstrap node")
 	}
 	if n.log == nil {
@@ -43,17 +43,17 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewWithBootNodes(t *testing.T) {
-	urls := make([]string, 0, len(nodeInfos))
+	bootNodes := make([]*enode.Node, 0, len(nodeInfos))
 	for _, info := range nodeInfos {
-		urls = append(urls, info.url)
+		bootNodes = append(bootNodes, enode.MustParse(info.url))
 	}
-	c := &Config{BootstrapUrls: urls}
+	c := &Config{BootNodes: bootNodes}
 	n := New(c)
 	if n == nil {
 		t.Error("New returns nil")
 	}
-	if len(n.bootstrapNodes) != len(urls) {
-		t.Errorf("New creates the incorrect number of bootstrap nodes: got: %v expected %v", len(n.bootstrapNodes), len(urls))
+	if len(n.config.BootNodes) != len(bootNodes) {
+		t.Errorf("New changes boot nodes")
 	}
 	if n.log == nil {
 		t.Error("New doesn't create the logger")
@@ -73,11 +73,10 @@ type fakeDisc struct {
 }
 
 func NewFakeDisc(infos []nodeInfo) *fakeDisc {
-	urls := make([]string, 0, len(infos))
+	nodes := make([]*enode.Node, 0, len(infos))
 	for _, info := range infos {
-		urls = append(urls, info.url)
+		nodes = append(nodes, enode.MustParse(info.url))
 	}
-	nodes := parseNodeUrls(urls)
 	m := make(map[*enode.Node]bool)
 	for i, n := range nodes {
 		m[n] = infos[i].alive

@@ -21,8 +21,8 @@ type discv5 interface {
 
 // Config is a configuration used to create Crawler.
 type Config struct {
-	// The urls of bootstrap nodes.
-	BootstrapUrls []string
+	// The list of ethereum nodes used to bootstrap the network.
+	BootNodes []*enode.Node
 	// The private key used to run the ethereum node.
 	PrivateKey *ecdsa.PrivateKey
 	// Logger.
@@ -32,8 +32,6 @@ type Config struct {
 // Crawler is a container for states of a cralwer node.
 type Crawler struct {
 	config *Config
-	// The list of ethereum nodes used to bootstrap the network.
-	bootstrapNodes []*enode.Node
 	// The interface used to communicate with the ethereum DHT.
 	disc discv5
 	// The log used inside the crawler.
@@ -52,15 +50,16 @@ func New(config *Config) *Crawler {
 		config.Logger = log.Default()
 	}
 	// Parse the bootstrap nodes.
-	if config.BootstrapUrls == nil {
-		config.BootstrapUrls = param.V5Bootnodes
+	if config.BootNodes == nil {
+		config.BootNodes = make([]*enode.Node, 0, len(param.V5Bootnodes))
+		for _, url := range param.V5Bootnodes {
+			config.BootNodes = append(config.BootNodes, enode.MustParse(url))
+		}
 	}
-	bootNodes := parseNodeUrls(config.BootstrapUrls)
 
 	return &Crawler{
-		config:         config,
-		bootstrapNodes: bootNodes,
-		log:            config.Logger,
+		config: config,
+		log:    config.Logger,
 	}
 }
 
@@ -113,7 +112,7 @@ func (c *Crawler) run(out chan<- *enode.Node) error {
 func (c *Crawler) setupDiscovery() error {
 	cfg := discover.Config{
 		PrivateKey: c.config.PrivateKey,
-		Bootnodes:  c.bootstrapNodes,
+		Bootnodes:  c.config.BootNodes,
 	}
 	// By putting the empty string, it will create a memory database instead
 	// of a persistent database.
