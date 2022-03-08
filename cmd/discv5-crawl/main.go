@@ -30,7 +30,8 @@ func main() {
 	go func() {
 		defer close(nodeCh)
 		// If bootUrls is nil, the crawler will use the default boot nodes.
-		cr := crawler.New(bootUrls)
+		cfg := &crawler.Config{BootstrapUrls: bootUrls}
+		cr := crawler.New(cfg)
 		if err := cr.Run(nodeCh); err != nil {
 			log.Fatal(err)
 		}

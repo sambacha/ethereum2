@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/p2p/enode"
 )
 
-func parseBoostrapUrls(urls []string) []*enode.Node {
+func parseNodeUrls(urls []string) []*enode.Node {
 	nodes := make([]*enode.Node, 0, len(urls))
 	for _, url := range urls {
 		if url != "" {

@@ -1,3 +1,5 @@
+allpackages := $(shell go list ./...)
+
 .PHONY: all
 all: build
 
@@ -13,3 +15,8 @@ build: $(CMDS:%=%.gocmd)
 .PHONY: clean
 clean:
 	rm -rf bin
+
+.PHONY: test
+test:
+	@go vet $(allpackages)
+	@go test -v $(allpackages)

@@ -11,38 +11,61 @@ import (
 	"github.com/ppopth/discv5-crawl/param"
 )
 
+// A shadow interface of discover.UDPv5, so we can do dependency injection
+// with a fake one.
+type discv5 interface {
+	RandomNodes() enode.Iterator
+	RequestENR(*enode.Node) (*enode.Node, error)
+	Close()
+}
+
+// Config is a configuration used to create Crawler.
+type Config struct {
+	// The urls of bootstrap nodes.
+	BootstrapUrls []string
+	// The private key used to run the ethereum node.
+	PrivateKey *ecdsa.PrivateKey
+	// Logger.
+	Logger *log.Logger
+}
+
 // Crawler is a container for states of a cralwer node.
 type Crawler struct {
-	// The private key used to run the ethereum node.
-	privateKey *ecdsa.PrivateKey
+	config *Config
 	// The list of ethereum nodes used to bootstrap the network.
 	bootstrapNodes []*enode.Node
 	// The interface used to communicate with the ethereum DHT.
-	disc *discover.UDPv5
+	disc discv5
+	// The log used inside the crawler.
+	log *log.Logger
 }
 
 // New creates a new crawler.
-func New(bootUrls []string) *Crawler {
-	// Generate a new key pair every time we create a new crawler.
-	// We can ignore an error over here, because it's just a key generation
-	// and there will be no error.
-	key, _ := crypto.GenerateKey()
-	// Parse the bootstrap nodes.
-	if bootUrls == nil {
-		log.Println("new crawler created with default bootstrap nodes")
-		bootUrls = param.V5Bootnodes
-	} else {
-		log.Println("new crawler created with custom bootstrap nodes")
+func New(config *Config) *Crawler {
+	if config.PrivateKey == nil {
+		// If no private key is provided, generate a new key.
+		// We can ignore an error over here, because it's just a key generation
+		// and there will be no error.
+		config.PrivateKey, _ = crypto.GenerateKey()
 	}
-	bootNodes := parseBoostrapUrls(bootUrls)
+	if config.Logger == nil {
+		config.Logger = log.Default()
+	}
+	// Parse the bootstrap nodes.
+	if config.BootstrapUrls == nil {
+		config.BootstrapUrls = param.V5Bootnodes
+	}
+	bootNodes := parseNodeUrls(config.BootstrapUrls)
 
 	return &Crawler{
-		privateKey:     key,
+		config:         config,
 		bootstrapNodes: bootNodes,
+		log:            config.Logger,
 	}
 }
 
-// Start crawling.
+// Start crawling. It receives a channel which it uses to send all the alive
+// nodes it finds.
 func (c *Crawler) Run(out chan<- *enode.Node) error {
 	if err := c.setupDiscovery(); err != nil {
 		return err
@@ -50,6 +73,12 @@ func (c *Crawler) Run(out chan<- *enode.Node) error {
 	// c.disc is produced after setupDiscovery. We need to eventually close it.
 	defer c.disc.Close()
 
+	return c.run(out)
+}
+
+// Start crawling but without `c.disc` set up beforehand. This allows
+// dependency injection during unit testing.
+func (c *Crawler) run(out chan<- *enode.Node) error {
 	iter := c.disc.RandomNodes()
 	// Used to send the node from the iterator to this method.
 	nodeCh := make(chan *enode.Node)
@@ -69,10 +98,10 @@ func (c *Crawler) Run(out chan<- *enode.Node) error {
 		if err != nil {
 			// If it's not alive, log and skip to the next node. We don't have
 			// to return an error here to the upper level in the call stack.
-			log.Printf("found unalive node\t\tid=%s", n.ID().TerminalString())
+			c.log.Printf("found unalive node\t\tid=%s", n.ID().TerminalString())
 			continue
 		}
-		log.Printf("found alive node\t\tid=%s", n.ID().TerminalString())
+		c.log.Printf("found alive node\t\tid=%s", nn.ID().TerminalString())
 		out <- nn
 	}
 
@@ -83,7 +112,7 @@ func (c *Crawler) Run(out chan<- *enode.Node) error {
 // Run all the necessary steps to produce `c.disc`.
 func (c *Crawler) setupDiscovery() error {
 	cfg := discover.Config{
-		PrivateKey: c.privateKey,
+		PrivateKey: c.config.PrivateKey,
 		Bootnodes:  c.bootstrapNodes,
 	}
 	// By putting the empty string, it will create a memory database instead
