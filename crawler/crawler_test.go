@@ -21,6 +21,7 @@ var (
 		{url: "enr:-Ku4QLylXZ0DWTelCTZQJxl2lsJFYYNk9B_Q2YXYfnxAiYCsRyOJnbVvxWRnQqiD1KTpa4YCdPwcdilx0ALtjIwLRjIHh2F0dG5ldHOIAAAAAAAAAACEZXRoMpC1MD8qAAAAAP__________gmlkgnY0gmlwhDayLMaJc2VjcDI1NmsxoQK2sBOLGcUb4AwuYzFuAVCaNHA-dy24UuEKkeFNgCVCsIN1ZHCCIyg", alive: false},
 		{url: "enr:-Ly4QKQ4BqHAOloSz-_lYVbfPpuAbn3uFxFiRSmWNzSEJZrsVnG-kTqjAleCu-KkSxvmIpt_ZIMmgUMbrWGdvDyEuM08h2F0dG5ldHOI__________-EZXRoMpDucelzYgAAcf__________gmlkgnY0gmlwhES3XM2Jc2VjcDI1NmsxoQK79EwWY2Zi9wvUKcFGkN3-VwoMvLLCJCKHQxFH6xgPyYhzeW5jbmV0cw-DdGNwgiMog3VkcIIjKA", alive: true},         // has attnets
 		{url: "enr:-MK4QB-ycOj1GuzRW8pjXiMxRhQz0Yby-Z_KWwZ_D3ddGy2dbWOVTmj3E6hFkoFTGeey1qJhq2bddsSnMz9xvWNneKGGAX26RhZSh2F0dG5ldHOI-_-___7__9-EZXRoMpCvyqugAQAAAP__________gmlkgnY0gmlwhCPc-ZyJc2VjcDI1NmsxoQMJdU5g6WmwFY10zH2rB7qyM-3hBgPH9mTtRLu-zv1FIYhzeW5jbmV0cwCDdGNwgjLIg3VkcIIu4A", alive: true}, // has attnets
+		{url: "enr:-KO4QDBsHwuYdxyb_KR_sJEt-5ikIsdfyQHK6zi72KiDXTIgDGf9mQl8hen6ycgbJyaSgjbe9_lLy6lcZZA5iwECoCWCATWEZXRoMpCvyqugAQAAAP__________gmlkgnY0gmlwhAMTwp2Jc2VjcDI1NmsxoQOGl6EENtmMz8v16Tr31ju-FQn54B0zJBb8WKXnbZjR84N0Y3CCIyiDdWRwgiMo", alive: true},
 		{url: "enr:-IS4QDAyibHCzYZmIYZCjXwU9BqpotWmv2BsFlIq1V31BwDDMJPFEbox1ijT5c2Ou3kvieOKejxuaCqIcjxBjJ_3j_cBgmlkgnY0gmlwhAMaHiCJc2VjcDI1NmsxoQJIdpj_foZ02MXz4It8xKD7yUHTBx7lVFn3oeRP21KRV4N1ZHCCIyg", alive: false},
 	}
 )
@@ -135,10 +136,17 @@ func TestRun(t *testing.T) {
 	if logger.Len() != len(disc.l) {
 		t.Errorf("the number of log lines is incorrect: got: %v expected: %v", logger.Len(), len(disc.l))
 	}
+	// The store to check for duplication.
+	store := make(map[enode.ID]bool)
 	for _, n := range disc.l {
 		var expected string
 		if disc.m[n] {
-			expected = fmt.Sprintf("found alive node\t\tid=%s\n", n.ID().TerminalString())
+			if _, ok := store[n.ID()]; ok {
+				expected = fmt.Sprintf("found duplicated node\tid=%s\n", n.ID().TerminalString())
+			} else {
+				expected = fmt.Sprintf("found alive node\t\tid=%s\n", n.ID().TerminalString())
+				store[n.ID()] = true
+			}
 		} else {
 			expected = fmt.Sprintf("found unalive node\t\tid=%s\n", n.ID().TerminalString())
 		}

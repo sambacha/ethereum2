@@ -18,6 +18,7 @@ After you run discv5-crawl, you will see the log as follows.
 2022/03/08 15:23:55 found alive node		id=6cb5a992ed2b2143
 2022/03/08 15:23:55 found node with attnets	id=6cb5a992ed2b2143	attnets=ffffeaff7bffbdbf
 2022/03/08 15:23:56 found unalive node		id=6c2e71f6bea30809
+2022/03/08 15:23:56 found duplicated node	id=6cb5a992ed2b2143
 ```
 You can see that, while it crawls, it outputs the log notifying what node id is
 found and what kind of node is found.
@@ -27,6 +28,9 @@ which has an ENR but we cannot connect to it. That is it's unalive.
 
 The line with the text `found alive node` indicates that it found a node which
 has an ENR and we can connect to it.
+
+The line with the text `found duplicated node` indicates that it found a node
+which we have seen as an alive node before.
 
 The most important line is the line with the text `found node with attnets`.
 It is a line indicating that it found a node which is alive and there is an
