@@ -6,7 +6,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/p2p/enode"
 	"github.com/ethereum/go-ethereum/p2p/enr"
-	"github.com/ppopth/discv5-crawl/attnets"
+	"github.com/thaidevguy/discv5-crawl/attnets"
 )
 
 // Declared to inject the custom log in the unit tests.

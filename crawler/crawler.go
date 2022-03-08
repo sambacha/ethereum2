@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/p2p/discover"
 	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ppopth/discv5-crawl/param"
+	"github.com/thaidevguy/discv5-crawl/param"
 )
 
 // A shadow interface of discover.UDPv5, so we can do dependency injection

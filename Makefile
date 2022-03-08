@@ -7,7 +7,7 @@ all: build
 CMDS := $(notdir $(wildcard $(CURDIR)/cmd/*))
 .PHONY: %.gocmd
 %.gocmd:
-	go build -o bin/$* github.com/ppopth/discv5-crawl/cmd/$*
+	go build -o bin/$* github.com/thaidevguy/discv5-crawl/cmd/$*
 
 .PHONY: build
 build: $(CMDS:%=%.gocmd)

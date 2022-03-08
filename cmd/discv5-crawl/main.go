@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ppopth/discv5-crawl/crawler"
+	"github.com/thaidevguy/discv5-crawl/crawler"
 )
 
 var (

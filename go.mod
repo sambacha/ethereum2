@@ -1,4 +1,4 @@
-module github.com/ppopth/discv5-crawl
+module github.com/thaidevguy/discv5-crawl
 
 go 1.17
 

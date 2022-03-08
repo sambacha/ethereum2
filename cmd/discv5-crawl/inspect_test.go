@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ppopth/discv5-crawl/internal/testlog"
+	"github.com/thaidevguy/discv5-crawl/internal/testlog"
 )
 
 type nodeInfo struct {
