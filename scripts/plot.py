@@ -14,8 +14,11 @@ if len(sys.argv) < 2:
 log_file = open(sys.argv[1], 'r')
 lines = log_file.readlines()
 counts = [0] * attnets_size
+alive_num = 0
 
 for line in lines:
+    if "found alive node" in line:
+        alive_num += 1
     m = re.search(r"attnets=([0-9a-f]*)", line)
     if m == None:
         continue
@@ -27,9 +30,9 @@ for line in lines:
             counts[i] += 1
 
 fig, ax = plt.subplots()
-ax.bar(range(attnets_size), np.array(counts)/sum(counts) * 100)
+ax.bar(range(attnets_size), np.array(counts)/alive_num * 100)
 ax.set_title('Distribution of numbers of nodes to attnets they are subscribed to')
 ax.set_xlabel('subnet id from a total of 64 subnets')
-ax.set_ylabel('percent of nodes subscribed to the subnet')
+ax.set_ylabel('number of nodes subscribed to the subnet as % of all alive nodes')
 ax.yaxis.set_major_formatter(mtick.PercentFormatter())
 plt.show()
