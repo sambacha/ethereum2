@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/ethereum/go-ethereum/p2p/enode"
-)
-
-var (
-	defaultBootstrapNodes   []*enode.Node
-	defaultBootstrapNodesV5 []*enode.Node
+	"github.com/ppopth/discv5-crawl/crawler"
 )
 
 func main() {
-	fmt.Println("discv5-crawl")
+	log.Println("started discv5-crawl")
+	cr := crawler.New()
+	if err := cr.Run(); err != nil {
+		log.Fatal(err)
+	}
 }

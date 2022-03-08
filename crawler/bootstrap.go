@@ -1,13 +1,12 @@
-package main
+package crawler
 
 import (
 	"log"
 
 	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ppopth/discv5-crawl/param"
 )
 
-func parseUrls(urls []string) []*enode.Node {
+func parseBoostrapUrls(urls []string) []*enode.Node {
 	nodes := make([]*enode.Node, 0, len(urls))
 	for _, url := range urls {
 		if url != "" {
@@ -20,9 +19,4 @@ func parseUrls(urls []string) []*enode.Node {
 		}
 	}
 	return nodes
-}
-
-func init() {
-	defaultBootstrapNodes = parseUrls(param.MainnetBootnodes)
-	defaultBootstrapNodesV5 = parseUrls(param.V5Bootnodes)
 }
