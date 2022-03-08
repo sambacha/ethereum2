@@ -22,13 +22,19 @@ type Crawler struct {
 }
 
 // New creates a new crawler.
-func New() *Crawler {
+func New(bootUrls []string) *Crawler {
 	// Generate a new key pair every time we create a new crawler.
 	// We can ignore an error over here, because it's just a key generation
 	// and there will be no error.
 	key, _ := crypto.GenerateKey()
 	// Parse the bootstrap nodes.
-	bootNodes := parseBoostrapUrls(param.V5Bootnodes)
+	if bootUrls == nil {
+		log.Println("new crawler created with default bootstrap nodes")
+		bootUrls = param.V5Bootnodes
+	} else {
+		log.Println("new crawler created with custom bootstrap nodes")
+	}
+	bootNodes := parseBoostrapUrls(bootUrls)
 
 	return &Crawler{
 		privateKey:     key,
