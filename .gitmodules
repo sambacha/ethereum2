@@ -1,0 +1,6 @@
+[submodule "execution-apis"]
+	path = execution-apis
+	url = https://github.com/ethereum/execution-apis
+[submodule "consensus-specs"]
+	path = consensus-specs
+	url = https://github.com/ethereum/consensus-specs
