@@ -1,0 +1,10 @@
+{
+  "documents": [
+    {
+      "namespace": "Eth2",
+      "url": "https://raw.githubusercontent.com/sambacha/eth2/master/api.json",
+      "path": "api.json"
+    },
+  ],
+  "targetFile": "api/open-api-docs.ts"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "eth2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sambacha/ethereum2.git"
+  },
+  "keywords": [],
+  "author": "sam bacha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sambacha/ethereum2/issues"
+  },
+  "homepage": "https://github.com/sambacha/ethereum2#readme",
+  "devDependencies": {
+    "@types/node": "^16.11.39",
+    "@yuanfudao/openapi-generator-typescript": "^0.2.0-alpha.1",
+    "ts-node": "^10.8.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "openapi-to-graphql": "^2.6.3",
+    "openapi-ts-sdk-builder": "^4.0.0"
+  }
+}
