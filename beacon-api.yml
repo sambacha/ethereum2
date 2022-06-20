@@ -1,0 +1,4978 @@
+openapi: 3.0.3
+info:
+  title: Eth Beacon Node API
+  description: >
+    API specification for the beacon node, which enables users to query and
+    participate in Ethereum 2.0 phase 0 beacon chain.
+
+
+    All requests by default send and receive JSON, and as such should have
+    either or both of the "Content-Type: application/json"
+
+    and "Accept: application/json" headers.  In addition, some requests can
+    return data in the SSZ format.  To indicate that SSZ
+
+    data is required in response to a request the header "Accept:
+    application/octet-stream" should be sent.  Note that only a subset
+
+    of requests can respond with data in SSZ format; these are noted in each
+    individual request.
+
+
+    API endpoints are individually versioned.  As such, there is no direct
+    relationship between all v1 endpoints, all v2 endpoints,
+
+    _etc._ and no such relationship should be inferred.  All JSON responses
+    return the requested data under a `data` key in the top
+
+    level of their response.  Additional metadata may or may not be present in
+    other keys at the top level of the response, dependent
+
+    on the endpoint.  The rules that require an increase in version number are
+    as follows:
+
+      - no field that is listed in an endpoint shall be removed without an increase in the version number
+      - no field that is listed in an endpoint shall be altered in terms of format (_e.g._ from a string to an array) without an
+        increase in the version number
+
+    Note that it is possible for a field to be added to an endpoint's data or
+    metadata without an increase in the version number.
+  version: Dev - Eth2Spec v1.1.0
+  contact:
+    name: Ethereum Github
+    url: https://github.com/ethereum/beacon-apis/issues
+  license:
+    name: CC0-1.0
+    url: https://creativecommons.org/publicdomain/zero/1.0/
+servers:
+  - url: '{server_url}'
+    variables:
+      server_url:
+        description: Beacon node API url
+        default: http://public-mainnet-node.ethereum.org/
+tags:
+  - name: Beacon
+    description: Set of endpoints to query beacon chain.
+  - name: Config
+    description: Endpoints to query chain configuration, specification, and fork schedules.
+  - name: Debug
+    description: Set of endpoints to debug chain and shouldn't be exposed publicly.
+  - name: Events
+    description: Set of endpoints to for event subscription.
+  - name: Node
+    description: Endpoints to query node related informations
+  - name: Validator
+    description: Endpoints intended for validator clients
+  - name: ValidatorRequiredApi
+    description: >
+      Minimal set of endpoints to enable a working validator implementation.
+
+
+      [Checkout validator flow](./validator-flow.md) to learn how to use this
+      api.
+paths:
+  /eth/v1/beacon/genesis:
+    get:
+      operationId: getGenesis
+      tags:
+        - Beacon
+        - ValidatorRequiredApi
+      summary: Retrieve details of the chain's genesis.
+      description: >-
+        Retrieve details of the chain's genesis which can be used to identify
+        chain.
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                type: object
+                title: GetGenesisResponse
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      genesis_time:
+                        $ref: '#/components/schemas/primitive_GenesisTime'
+                      genesis_validators_root:
+                        $ref: '#/components/schemas/primitive_Root'
+                      genesis_fork_version:
+                        $ref: '#/components/schemas/primitive_ForkVersion'
+        '404':
+          description: Chain genesis info is not yet known
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: Chain genesis info is not yet known
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/root:
+    get:
+      operationId: getStateRoot
+      summary: Get state SSZ HashTreeRoot
+      description: >-
+        Calculates HashTreeRoot for state with given 'stateId'. If stateId is
+        root, same value will be returned.
+      tags:
+        - Beacon
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetStateRootResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: object
+                    properties:
+                      root:
+                        allOf:
+                          - $ref: '#/components/schemas/primitive_Root'
+                          - description: HashTreeRoot of BeaconState object
+        '400':
+          description: Invalid state ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid state ID: current'
+        '404':
+          description: State not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+              example:
+                code: 404
+                message: State not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/fork:
+    get:
+      operationId: getStateFork
+      summary: Get Fork object for requested state
+      description: >-
+        Returns
+        [Fork](https://github.com/ethereum/consensus-specs/blob/v0.11.1/specs/phase0/beacon-chain.md#fork)
+        object for state with given 'stateId'.
+      tags:
+        - Beacon
+        - ValidatorRequiredApi
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetStateForkResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    $ref: '#/components/schemas/misc_Fork'
+        '400':
+          description: Invalid state ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid state ID: current'
+        '404':
+          description: State not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: State not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/finality_checkpoints:
+    get:
+      operationId: getStateFinalityCheckpoints
+      summary: Get state finality checkpoints
+      description: >
+        Returns finality checkpoints for state with given 'stateId'.
+
+        In case finality is not yet achieved, checkpoint should return epoch 0
+        and ZERO_HASH as root.
+      tags:
+        - Beacon
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetStateFinalityCheckpointsResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: object
+                    properties:
+                      previous_justified:
+                        $ref: '#/components/schemas/misc_Checkpoint'
+                      current_justified:
+                        $ref: '#/components/schemas/misc_Checkpoint'
+                      finalized:
+                        $ref: '#/components/schemas/misc_Checkpoint'
+        '400':
+          description: Invalid state ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid state ID: current'
+        '404':
+          description: State not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: State not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/validators:
+    get:
+      operationId: getStateValidators
+      summary: Get validators from state
+      description: >
+        Returns filterable list of validators with their balance, status and
+        index.
+
+
+        Information will be returned for all indices or public key that match
+        known validators.  If an index or public key does not
+
+        match any known validator, no information will be returned but this will
+        not cause an error.  There are no guarantees for the
+
+        returned data in terms of ordering; both the index and public key are
+        returned for each validator, and can be used to confirm
+
+        for which inputs a response has been returned.
+      tags:
+        - Beacon
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+        - name: id
+          description: >-
+            Either hex encoded public key (any bytes48 with 0x prefix) or
+            validator index
+          in: query
+          required: false
+          schema:
+            type: array
+            maxItems: 30
+            uniqueItems: true
+            items:
+              description: >-
+                Either hex encoded public key (any bytes48 with 0x prefix) or
+                validator index
+              type: string
+        - name: status
+          description: >-
+            [Validator status
+            specification](https://hackmd.io/ofFJ5gOmQpu1jjHilHbdQQ)
+          in: query
+          required: false
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              allOf:
+                - $ref: '#/components/schemas/api_ValidatorStatus'
+                - enum:
+                    - active
+                    - pending
+                    - exited
+                    - withdrawal
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetStateValidatorsResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/api_ValidatorResponse'
+        '400':
+          description: Invalid state or validator ID, or status
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid state ID: current'
+        '404':
+          description: State not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: State not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/validators/{validator_id}:
+    get:
+      operationId: getStateValidator
+      summary: Get validator from state by id
+      description: >-
+        Returns validator specified by state and id or public key along with
+        status and balance.
+      tags:
+        - Beacon
+        - ValidatorRequiredApi
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+        - name: validator_id
+          description: >-
+            Either hex encoded public key (any bytes48 with 0x prefix) or
+            validator index
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetStateValidatorResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    $ref: '#/components/schemas/api_ValidatorResponse'
+        '400':
+          description: Invalid state or validator ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid state ID: current'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_ErrorMessage'
+              examples:
+                StateNotFound:
+                  value:
+                    code: 404
+                    message: State not found
+                ValidatorNotFound:
+                  value:
+                    code: 404
+                    message: Validator not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/validator_balances:
+    get:
+      operationId: getStateValidatorBalances
+      summary: Get validator balances from state
+      description: >
+        Returns filterable list of validators balances.
+
+
+        Balances will be returned for all indices or public key that match known
+        validators.  If an index or public key does not
+
+        match any known validator, no balance will be returned but this will not
+        cause an error.  There are no guarantees for the
+
+        returned data in terms of ordering; the index and is returned for each
+        balance, and can be used to confirm for which inputs a
+
+        response has been returned.
+      tags:
+        - Beacon
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+        - name: id
+          description: >-
+            Either hex encoded public key (any bytes48 with 0x prefix) or
+            validator index
+          in: query
+          required: false
+          schema:
+            type: array
+            maxItems: 30
+            uniqueItems: true
+            items:
+              description: >-
+                Either hex encoded public key (any bytes48 with 0x prefix) or
+                validator index
+              type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetStateValidatorBalancesResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/api_ValidatorBalanceResponse'
+        '400':
+          description: Invalid state or validator ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid state ID: current'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/committees:
+    get:
+      operationId: getEpochCommittees
+      summary: Get all committees for a state.
+      description: Retrieves the committees for the given state.
+      tags:
+        - Beacon
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+        - name: epoch
+          description: >-
+            Fetch committees for the given epoch.  If not present then the
+            committees for the epoch of the state will be obtained.
+          in: query
+          required: false
+          allowEmptyValue: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+              - example: ''
+        - name: index
+          description: >-
+            Restrict returned values to those matching the supplied committee
+            index.
+          in: query
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+              - example: ''
+        - name: slot
+          description: Restrict returned values to those matching the supplied slot.
+          in: query
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+              - example: ''
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetEpochCommitteesResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/api_Committee'
+        '400':
+          description: Invalid state ID, index, epoch, slot, or combination thereof
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: Slot does not belong in epoch
+        '404':
+          description: State not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+              example:
+                code: 404
+                message: State not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/states/{state_id}/sync_committees:
+    get:
+      operationId: getEpochSyncCommittees
+      summary: Get sync committees for a state.
+      description: Retrieves the sync committees for the given state.
+      tags:
+        - Beacon
+      parameters:
+        - name: state_id
+          in: path
+          $ref: '#/components/parameters/index_StateId'
+        - name: epoch
+          description: >-
+            Fetch sync committees for the given epoch.  If not present then the
+            sync committees for the epoch of the state will be obtained.
+          in: query
+          required: false
+          allowEmptyValue: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+              - example: ''
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetEpochSyncCommitteesResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    $ref: '#/components/schemas/SyncCommitteeByValidatorIndices'
+        '400':
+          description: Invalid state ID or epoch
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: Epoch is outside the sync committee period of the state
+        '404':
+          description: State not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+              example:
+                code: 404
+                message: State not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/headers:
+    get:
+      operationId: getBlockHeaders
+      summary: Get block headers
+      description: >-
+        Retrieves block headers matching given query. By default it will fetch
+        current head slot blocks.
+      tags:
+        - Beacon
+      parameters:
+        - name: slot
+          in: query
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+              - example: ''
+        - name: parent_root
+          in: query
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+              - example: ''
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetBlockHeadersResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        root:
+                          $ref: '#/components/schemas/primitive_Root'
+                        canonical:
+                          type: boolean
+                        header:
+                          $ref: '#/components/schemas/block_SignedBeaconBlockHeader'
+        '400':
+          description: The block ID supplied could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid block ID: current'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/headers/{block_id}:
+    get:
+      operationId: getBlockHeader
+      summary: Get block header
+      description: Retrieves block header for given block id.
+      tags:
+        - Beacon
+      parameters:
+        - name: block_id
+          in: path
+          required: true
+          $ref: '#/components/parameters/index_BlockId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetBlockHeaderResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: object
+                    properties:
+                      root:
+                        $ref: '#/components/schemas/primitive_Root'
+                      canonical:
+                        type: boolean
+                      header:
+                        $ref: '#/components/schemas/block_SignedBeaconBlockHeader'
+        '400':
+          description: The block ID supplied could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid block ID: current'
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: Block not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/blinded_blocks:
+    post:
+      tags:
+        - Beacon
+        - ValidatorRequiredApi
+      summary: Publish a signed block.
+      operationId: publishBlindedBlock
+      description: >
+        Instructs the beacon node to use the components of the
+        `SignedBlindedBeaconBlock` to construct and publish a 
+
+        `SignedBeaconBlock` by swapping out the `transactions_root` for the
+        corresponding full list of `transactions`.
+
+        The beacon node should broadcast a newly constructed `SignedBeaconBlock`
+        to the beacon network,
+
+        to be included in the beacon chain. The beacon node is not required to
+        validate the signed
+
+        `BeaconBlock`, and a successful response (20X) only indicates that the
+        broadcast has been
+
+        successful. The beacon node is expected to integrate the new block into
+        its state, and
+
+        therefore validate the block internally, however blocks which fail the
+        validation are still
+
+        broadcast but a different status code is returned (202). Pre-Bellatrix,
+        this endpoint will accept 
+
+        a `SignedBeaconBlock`.
+      parameters:
+        - in: header
+          schema:
+            $ref: '#/components/schemas/ConsensusVersion'
+          required: false
+          name: Eth-Consensus-Version
+          description: Version of the block being submitted, if using SSZ encoding.
+      requestBody:
+        description: >-
+          The `SignedBlindedBeaconBlock` object composed of `BlindedBeaconBlock`
+          object (produced by beacon node) and validator signature.
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/block_SignedBeaconBlock'
+                - $ref: '#/components/schemas/Altair-SignedBeaconBlock'
+                - $ref: '#/components/schemas/SignedBlindedBeaconBlock'
+          application/octet-stream:
+            schema:
+              description: >-
+                SSZ serialized block bytes. Use content type header to indicate
+                that SSZ data is contained in the request body.
+      responses:
+        '200':
+          description: >-
+            The block was validated successfully and has been broadcast. It has
+            also been integrated into the beacon node's database.
+        '202':
+          description: >-
+            The block failed validation, but was successfully broadcast anyway.
+            It was not integrated into the beacon node's database.
+        '400':
+          description: The `SignedBlindedBeaconBlock` object is invalid
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid block: missing signature'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v2/beacon/blocks/{block_id}:
+    get:
+      operationId: getBlockV2
+      summary: Get block
+      description: >
+        Retrieves block details for given block id.
+
+        Depending on `Accept` header it can be returned either as json or as
+        bytes serialized by SSZ
+      tags:
+        - Beacon
+      parameters:
+        - name: block_id
+          in: path
+          required: true
+          $ref: '#/components/parameters/index_BlockId'
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            Eth-Consensus-Version:
+              $ref: '#/components/headers/Eth-Consensus-Version'
+          content:
+            application/json:
+              schema:
+                title: GetBlockV2Response
+                type: object
+                properties:
+                  version:
+                    type: string
+                    enum:
+                      - phase0
+                      - altair
+                      - bellatrix
+                    example: phase0
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/block_SignedBeaconBlock'
+                      - $ref: '#/components/schemas/Altair-SignedBeaconBlock'
+                      - $ref: '#/components/schemas/Bellatrix-SignedBeaconBlock'
+            application/octet-stream:
+              schema:
+                description: >-
+                  SSZ serialized block bytes. Use Accept header to choose this
+                  response type
+        '400':
+          description: The block ID supplied could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid block ID: current'
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: Block not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/blocks/{block_id}/root:
+    get:
+      operationId: getBlockRoot
+      summary: Get block root
+      description: Retrieves hashTreeRoot of BeaconBlock/BeaconBlockHeader
+      tags:
+        - Beacon
+      parameters:
+        - name: block_id
+          in: path
+          required: true
+          example: head
+          schema:
+            type: string
+          description: >
+            Block identifier.
+
+            Can be one of: "head" (canonical head in node's view), "genesis",
+            "finalized", \<slot\>, \<hex encoded blockRoot with 0x prefix\>.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                title: GetBlockRootResponse
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: object
+                    properties:
+                      root:
+                        allOf:
+                          - description: >-
+                              HashTreeRoot of BeaconBlock/BeaconBlockHeader
+                              object
+                          - $ref: '#/components/schemas/primitive_Root'
+        '400':
+          description: The block ID supplied could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid block ID: current'
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: Block not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/blocks/{block_id}/attestations:
+    get:
+      operationId: getBlockAttestations
+      summary: Get block attestations
+      description: Retrieves attestation included in requested block.
+      tags:
+        - Beacon
+      parameters:
+        - name: block_id
+          in: path
+          required: true
+          $ref: '#/components/parameters/index_BlockId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetBlockAttestationsResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/attestation_Attestation'
+        '400':
+          description: The block ID supplied could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid block ID: current'
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: Block not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/pool/attestations:
+    get:
+      operationId: getPoolAttestations
+      summary: Get Attestations from operations pool
+      description: >-
+        Retrieves attestations known by the node but not necessarily
+        incorporated into any block
+      parameters:
+        - name: slot
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+        - name: committee_index
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+      tags:
+        - Beacon
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: GetPoolAttestationsResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/attestation_Attestation'
+        '400':
+          description: The slot or committee index could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid slot: current'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+    post:
+      operationId: submitPoolAttestations
+      summary: Submit Attestation objects to node
+      description: >
+        Submits Attestation objects to the node.  Each attestation in the
+        request body is processed individually.
+
+
+        If an attestation is validated successfully the node MUST publish that
+        attestation on the appropriate subnet.
+
+
+        If one or more attestations fail validation the node MUST return a 400
+        error with details of which attestations have failed, and why.
+      tags:
+        - Beacon
+        - ValidatorRequiredApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/attestation_Attestation'
+      responses:
+        '200':
+          description: Attestations are stored in pool and broadcast on appropriate subnet
+        '400':
+          description: Errors with one or more attestations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_IndexedErrorMessage'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/pool/attester_slashings:
+    get:
+      operationId: getPoolAttesterSlashings
+      summary: Get AttesterSlashings from operations pool
+      description: >-
+        Retrieves attester slashings known by the node but not necessarily
+        incorporated into any block
+      tags:
+        - Beacon
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: GetPoolAttesterSlashingsResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/attester_slashing_AttesterSlashing'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+    post:
+      operationId: submitPoolAttesterSlashings
+      summary: Submit AttesterSlashing object to node's pool
+      description: >-
+        Submits AttesterSlashing object to node's pool and if passes validation
+        node MUST broadcast it to network.
+      tags:
+        - Beacon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/attester_slashing_AttesterSlashing'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Invalid attester slashing
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: >-
+                        Invalid attester slashing, it will never pass validation
+                        so it's rejected
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/pool/proposer_slashings:
+    get:
+      operationId: getPoolProposerSlashings
+      summary: Get ProposerSlashings from operations pool
+      description: >-
+        Retrieves proposer slashings known by the node but not necessarily
+        incorporated into any block
+      tags:
+        - Beacon
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: GetPoolProposerSlashingsResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/proposer_slashing_ProposerSlashing'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+    post:
+      operationId: submitPoolProposerSlashings
+      summary: Submit ProposerSlashing object to node's pool
+      description: >-
+        Submits ProposerSlashing object to node's pool and if passes validation 
+        node MUST broadcast it to network.
+      tags:
+        - Beacon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/proposer_slashing_ProposerSlashing'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Invalid proposer slashing
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: >-
+                        Invalid proposer slashing, it will never pass validation
+                        so it's rejected
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/pool/sync_committees:
+    post:
+      operationId: submitPoolSyncCommitteeSignatures
+      summary: Submit sync committee signatures to node
+      description: >
+        Submits sync committee signature objects to the node.
+
+
+        Sync committee signatures are not present in phase0, but are required
+        for Altair networks.
+
+
+        If a sync committee signature is validated successfully the node MUST
+        publish that sync committee signature on all applicable subnets.
+
+
+        If one or more sync committee signatures fail validation the node MUST
+        return a 400 error with details of which sync committee signatures have
+        failed, and why.
+      tags:
+        - Beacon
+        - ValidatorRequiredApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncCommitteeSignature'
+      responses:
+        '200':
+          description: >-
+            Sync committee signatures are stored in pool and broadcast on
+            appropriate subnet
+        '400':
+          description: Errors with one or more sync committee signatures
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_IndexedErrorMessage'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/beacon/pool/voluntary_exits:
+    get:
+      operationId: getPoolVoluntaryExits
+      summary: Get SignedVoluntaryExit from operations pool
+      description: >-
+        Retrieves voluntary exits known by the node but not necessarily
+        incorporated into any block
+      tags:
+        - Beacon
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: GetPoolVoluntaryExitsResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/voluntary_exit_SignedVoluntaryExit'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+    post:
+      operationId: submitPoolVoluntaryExit
+      summary: Submit SignedVoluntaryExit object to node's pool
+      description: >-
+        Submits SignedVoluntaryExit object to node's pool and if passes
+        validation node MUST broadcast it to network.
+      tags:
+        - Beacon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/voluntary_exit_SignedVoluntaryExit'
+      responses:
+        '200':
+          description: Voluntary exit is stored in node and broadcasted to network
+        '400':
+          description: Invalid voluntary exit
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: >-
+                        Invalid voluntary exit, it will never pass validation so
+                        it's rejected
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v2/debug/beacon/states/{state_id}:
+    get:
+      operationId: getStateV2
+      summary: Get full BeaconState object
+      description: >
+        Returns full BeaconState object for given stateId.
+
+        Depending on `Accept` header it can be returned either as json or as
+        bytes serialized by SSZ
+      tags:
+        - Debug
+      parameters:
+        - name: state_id
+          in: path
+          required: true
+          $ref: '#/components/parameters/index_StateId'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Eth-Consensus-Version:
+              $ref: '#/components/headers/Eth-Consensus-Version'
+          content:
+            application/json:
+              schema:
+                title: GetStateV2Response
+                type: object
+                properties:
+                  version:
+                    type: string
+                    enum:
+                      - phase0
+                      - altair
+                      - bellatrix
+                    example: phase0
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/state_BeaconState'
+                      - $ref: '#/components/schemas/Altair-BeaconState'
+                      - $ref: '#/components/schemas/Bellatrix-BeaconState'
+            application/octet-stream:
+              schema:
+                description: >-
+                  SSZ serialized state bytes. Use Accept header to choose this
+                  response type
+        '400':
+          description: Invalid state ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid state ID: current'
+        '404':
+          description: State not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: State not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/debug/beacon/heads:
+    get:
+      operationId: getDebugChainHeads
+      summary: Get fork choice leaves
+      description: Retrieves all possible chain heads (leaves of fork choice tree).
+      deprecated: true
+      tags:
+        - Debug
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetDebugChainHeadsResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        root:
+                          $ref: '#/components/schemas/primitive_Root'
+                        slot:
+                          $ref: '#/components/schemas/primitive_Uint64'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v2/debug/beacon/heads:
+    get:
+      operationId: getDebugChainHeadsV2
+      summary: Get fork choice leaves
+      description: Retrieves all possible chain heads (leaves of fork choice tree).
+      tags:
+        - Debug
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetDebugChainHeadsResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        root:
+                          $ref: '#/components/schemas/primitive_Root'
+                        slot:
+                          $ref: '#/components/schemas/primitive_Uint64'
+                        execution_optimistic:
+                          $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/node/identity:
+    get:
+      operationId: getNetworkIdentity
+      tags:
+        - Node
+      summary: Get node network identity
+      description: Retrieves data about the node's network presence
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                title: GetNetworkIdentityResponse
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/p2p_NetworkIdentity'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/node/peers:
+    get:
+      operationId: getPeers
+      tags:
+        - Node
+      summary: Get node network peers
+      description: >-
+        Retrieves data about the node's network peers. By default this returns
+        all peers. Multiple query params are combined using AND conditions
+      parameters:
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/p2p_PeerConnectionState'
+        - name: direction
+          in: query
+          required: false
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/p2p_PeerConnectionDirection'
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                title: GetPeersResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/p2p_Peer'
+                  meta:
+                    type: object
+                    properties:
+                      count:
+                        description: Total number of items
+                        type: number
+                        example: 1
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/node/peers/{peer_id}:
+    get:
+      operationId: getPeer
+      tags:
+        - Node
+      summary: Get peer
+      description: Retrieves data about the given peer
+      parameters:
+        - name: peer_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/p2p_PeerId'
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                title: GetPeerResponse
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/p2p_Peer'
+        '400':
+          description: The peer ID supplied could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid peer ID: localhost'
+        '404':
+          description: Peer not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 404
+                      message: Peer not found
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/node/peer_count:
+    get:
+      operationId: getPeerCount
+      tags:
+        - Node
+      summary: Get peer count
+      description: Retrieves number of known peers.
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                title: GetPeerCountResponse
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      disconnected:
+                        allOf:
+                          - $ref: '#/components/schemas/primitive_Uint64'
+                          - example: '12'
+                      connecting:
+                        allOf:
+                          - $ref: '#/components/schemas/primitive_Uint64'
+                          - example: '34'
+                      connected:
+                        allOf:
+                          - $ref: '#/components/schemas/primitive_Uint64'
+                          - example: '56'
+                      disconnecting:
+                        allOf:
+                          - $ref: '#/components/schemas/primitive_Uint64'
+                          - example: '5'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/node/version:
+    get:
+      operationId: getNodeVersion
+      tags:
+        - Node
+      summary: Get version string of the running beacon node.
+      description: >-
+        Requests that the beacon node identify information about its
+        implementation in a format similar to a  [HTTP
+        User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) field.
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                title: GetVersionResponse
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      version:
+                        $ref: '#/components/schemas/primitive_Version'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/node/syncing:
+    get:
+      operationId: getSyncingStatus
+      tags:
+        - Node
+        - ValidatorRequiredApi
+      summary: Get node syncing status
+      description: >-
+        Requests the beacon node to describe if it's currently syncing or not,
+        and if it is, what block it is up to.
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                title: GetSyncingStatusResponse
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      head_slot:
+                        allOf:
+                          - description: Head slot node is trying to reach
+                          - $ref: '#/components/schemas/primitive_Uint64'
+                      sync_distance:
+                        allOf:
+                          - description: >-
+                              How many slots node needs to process to reach
+                              head. 0 if synced.
+                          - $ref: '#/components/schemas/primitive_Uint64'
+                      is_syncing:
+                        allOf:
+                          - type: boolean
+                          - description: >-
+                              Set to true if the node is syncing, false if the
+                              node is synced.
+                      is_optimistic:
+                        allOf:
+                          - type: boolean
+                          - description: >-
+                              Set to true if the node is optimistically tracking
+                              head.
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/node/health:
+    get:
+      operationId: getHealth
+      tags:
+        - Node
+      summary: Get health check
+      description: >-
+        Returns node health status in http status codes. Useful for load
+        balancers.
+      responses:
+        '200':
+          description: Node is ready
+        '206':
+          description: Node is syncing but can serve incomplete data
+        '503':
+          description: Node not initialized or having issues
+  /eth/v1/config/fork_schedule:
+    get:
+      operationId: getForkSchedule
+      summary: Get scheduled upcoming forks.
+      description: >-
+        Retrieve all forks, past present and future, of which this node is
+        aware.
+      tags:
+        - Config
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetForkScheduleResponse
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/misc_Fork'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/config/spec:
+    get:
+      operationId: getSpec
+      summary: Get spec params.
+      description: >
+        Retrieve specification configuration used on this node.  The
+        configuration should include:
+          - Constants for all hard forks known by the beacon node, for example the [phase 0](https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#constants) and [altair](https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md#constants) values
+          - Presets for all hard forks supplied to the beacon node, for example the [phase 0](https://github.com/ethereum/consensus-specs/blob/dev/presets/mainnet/phase0.yaml) and [altair](https://github.com/ethereum/consensus-specs/blob/dev/presets/mainnet/altair.yaml) values
+          - Configuration for the beacon node, for example the [mainnet](https://github.com/ethereum/consensus-specs/blob/dev/configs/mainnet.yaml) values
+
+        Values are returned with following format:
+          - any value starting with 0x in the spec is returned as a hex string
+          - numeric values are returned as a quoted integer
+      tags:
+        - Config
+        - ValidatorRequiredApi
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetSpecResponse
+                type: object
+                properties:
+                  data:
+                    description: >
+                      Key value mapping of all constants, presets and
+                      configuration values for all known hard forks
+
+                      Values are returned with following format:
+                        - any value starting with 0x in the spec is returned as a hex string
+                        - numeric values are returned as a quoted integer
+                    type: object
+                example:
+                  DEPOSIT_CONTRACT_ADDRESS: '0x00000000219ab540356cBB839Cbe05303d7705Fa'
+                  DEPOSIT_NETWORK_ID: '1'
+                  DOMAIN_AGGREGATE_AND_PROOF: '0x06000000'
+                  INACTIVITY_PENALTY_QUOTIENT: '67108864'
+                  INACTIVITY_PENALTY_QUOTIENT_ALTAIR: '50331648'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/config/deposit_contract:
+    get:
+      operationId: getDepositContract
+      summary: Get deposit contract address.
+      description: Retrieve Eth1 deposit contract address and chain ID.
+      tags:
+        - Config
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: GetDepositContractResponse
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      chain_id:
+                        allOf:
+                          - $ref: '#/components/schemas/primitive_Uint64'
+                          - description: Id of Eth1 chain on which contract is deployed.
+                          - example: '1'
+                      address:
+                        allOf:
+                          - $ref: '#/components/schemas/primitive_Hex'
+                          - description: >-
+                              Hex encoded deposit contract address with 0x
+                              prefix
+                          - example: '0x1Db3439a222C519ab44bb1144fC28167b4Fa6EE6'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/validator/duties/attester/{epoch}:
+    post:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      summary: Get attester duties
+      operationId: getAttesterDuties
+      description: >-
+        Requests the beacon node to provide a set of attestation duties, which
+        should be performed by validators, for a particular epoch.
+
+        Duties should only need to be checked once per epoch, however a chain
+        reorganization (of > MIN_SEED_LOOKAHEAD epochs) could occur, resulting
+        in a change of duties. For full safety, you should monitor head events
+        and confirm the dependent root in this response matches:
+
+        - event.previous_duty_dependent_root when
+        `compute_epoch_at_slot(event.slot) == epoch`
+
+        - event.current_duty_dependent_root when
+        `compute_epoch_at_slot(event.slot) + 1 == epoch`
+
+        - event.block otherwise
+
+
+        The dependent_root value is `get_block_root_at_slot(state,
+        compute_start_slot_at_epoch(epoch - 1) - 1)` or the genesis block root
+        in the case of underflow.
+      parameters:
+        - name: epoch
+          description: Should only be allowed 1 epoch ahead
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+      requestBody:
+        description: An array of the validator indices for which to obtain the duties.
+        required: true
+        content:
+          application/json:
+            schema:
+              title: GetAttesterDutiesBody
+              type: array
+              items:
+                $ref: '#/components/schemas/primitive_Uint64'
+                minItems: 1
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: GetAttesterDutiesResponse
+                type: object
+                properties:
+                  dependent_root:
+                    $ref: '#/components/schemas/primitive_DependentRoot'
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/validator_AttesterDuty'
+        '400':
+          description: Invalid epoch or index
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid epoch: -2'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/duties/proposer/{epoch}:
+    get:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      summary: Get block proposers duties
+      operationId: getProposerDuties
+      description: >-
+        Request beacon node to provide all validators that are scheduled to
+        propose a block in the given epoch.
+
+        Duties should only need to be checked once per epoch, however a chain
+        reorganization could occur that results in a change of duties. For full
+        safety, you should monitor head events and confirm the dependent root in
+        this response matches:
+
+        - event.current_duty_dependent_root when
+        `compute_epoch_at_slot(event.slot) == epoch`
+
+        - event.block otherwise
+
+
+        The dependent_root value is `get_block_root_at_slot(state,
+        compute_start_slot_at_epoch(epoch) - 1)` or the genesis block root in
+        the case of underflow.
+      parameters:
+        - name: epoch
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: GetProposerDutiesResponse
+                type: object
+                properties:
+                  dependent_root:
+                    $ref: '#/components/schemas/primitive_DependentRoot'
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/validator_ProposerDuty'
+        '400':
+          description: Invalid epoch
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid epoch: -2'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/duties/sync/{epoch}:
+    post:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      summary: Get sync committee duties
+      operationId: getSyncCommitteeDuties
+      description: >-
+        Requests the beacon node to provide a set of sync committee duties for a
+        particular epoch.
+      parameters:
+        - name: epoch
+          description: >-
+            epoch // EPOCHS_PER_SYNC_COMMITTEE_PERIOD <= current_epoch //
+            EPOCHS_PER_SYNC_COMMITTEE_PERIOD + 1
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+      requestBody:
+        description: An array of the validator indices for which to obtain the duties.
+        required: true
+        content:
+          application/json:
+            schema:
+              title: GetSyncCommitteeDutiesBody
+              type: array
+              items:
+                $ref: '#/components/schemas/primitive_Uint64'
+                minItems: 1
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: GetSyncCommitteeDutiesResponse
+                type: object
+                properties:
+                  execution_optimistic:
+                    $ref: '#/components/schemas/primitive_ExecutionOptimistic'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SyncDuty'
+        '400':
+          description: Invalid epoch or index
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid epoch: -2'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/blocks/{slot}:
+    get:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      operationId: produceBlock
+      deprecated: true
+      summary: Produce a new block, without signature.
+      description: >
+        Requests a beacon node to produce a valid block, which can then be
+        signed by a validator.
+
+
+        __NOTE__: Supports only phase0 blocks.
+      parameters:
+        - name: slot
+          in: path
+          required: true
+          description: The slot for which the block should be proposed.
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+        - name: randao_reveal
+          in: query
+          required: true
+          description: The validator's randao reveal value.
+          schema:
+            $ref: '#/components/schemas/primitive_Signature'
+        - name: graffiti
+          in: query
+          required: false
+          description: Arbitrary data validator wants to include in block.
+          schema:
+            $ref: '#/components/schemas/primitive_Graffiti'
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: ProduceBlockResponse
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/block_BeaconBlock'
+        '400':
+          description: Invalid block production request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_ErrorMessage'
+              examples:
+                InvalidRequest:
+                  value:
+                    code: 400
+                    message: Invalid request to produce a block
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v2/validator/blocks/{slot}:
+    get:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      operationId: produceBlockV2
+      summary: Produce a new block, without signature.
+      description: >
+        Requests a beacon node to produce a valid block, which can then be
+        signed by a validator.
+
+
+        Metadata in the response indicates the type of block produced, and the
+        supported types of block
+
+        will be added to as forks progress.
+      parameters:
+        - name: slot
+          in: path
+          required: true
+          description: The slot for which the block should be proposed.
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+        - name: randao_reveal
+          in: query
+          required: true
+          description: The validator's randao reveal value.
+          schema:
+            $ref: '#/components/schemas/primitive_Signature'
+        - name: graffiti
+          in: query
+          required: false
+          description: Arbitrary data validator wants to include in block.
+          schema:
+            $ref: '#/components/schemas/primitive_Graffiti'
+      responses:
+        '200':
+          description: Success response
+          headers:
+            Eth-Consensus-Version:
+              $ref: '#/components/headers/Eth-Consensus-Version'
+          content:
+            application/json:
+              schema:
+                title: ProduceBlockV2Response
+                type: object
+                properties:
+                  version:
+                    type: string
+                    enum:
+                      - phase0
+                      - altair
+                      - bellatrix
+                    example: phase0
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/block_BeaconBlock'
+                      - $ref: '#/components/schemas/Altair-BeaconBlock'
+                      - $ref: '#/components/schemas/Bellatrix-BeaconBlock'
+            application/octet-stream:
+              schema:
+                description: >-
+                  SSZ serialized block bytes. Use Accept header to choose this
+                  response type, version string is sent in header
+                  `Eth-Consensus-Version`.
+        '400':
+          description: Invalid block production request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_ErrorMessage'
+              examples:
+                InvalidRequest:
+                  value:
+                    code: 400
+                    message: Invalid request to produce a block
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/blinded_blocks/{slot}:
+    get:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      operationId: produceBlindedBlock
+      summary: Produce a new blinded block, without signature.
+      description: >
+        Requests a beacon node to produce a valid blinded block, which can then
+        be signed by a validator. 
+
+        A blinded block is a block with only a transactions root, rather than a
+        full transactions list.
+
+
+        Metadata in the response indicates the type of block produced, and the
+        supported types of block
+
+        will be added to as forks progress.
+
+
+        Pre-Bellatrix, this endpoint will return a `BeaconBlock`.
+      parameters:
+        - name: slot
+          in: path
+          required: true
+          description: The slot for which the block should be proposed.
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+        - name: randao_reveal
+          in: query
+          required: true
+          description: The validator's randao reveal value.
+          schema:
+            $ref: '#/components/schemas/primitive_Signature'
+        - name: graffiti
+          in: query
+          required: false
+          description: Arbitrary data validator wants to include in block.
+          schema:
+            $ref: '#/components/schemas/primitive_Graffiti'
+      responses:
+        '200':
+          description: Success response
+          headers:
+            Eth-Consensus-Version:
+              $ref: '#/components/headers/Eth-Consensus-Version'
+          content:
+            application/json:
+              schema:
+                title: ProduceBlindedBlockResponse
+                type: object
+                properties:
+                  version:
+                    type: string
+                    enum:
+                      - phase0
+                      - altair
+                      - bellatrix
+                    example: bellatrix
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/block_BeaconBlock'
+                      - $ref: '#/components/schemas/Altair-BeaconBlock'
+                      - $ref: '#/components/schemas/BlindedBeaconBlock'
+            application/octet-stream:
+              schema:
+                description: >-
+                  SSZ serialized block bytes. Use Accept header to choose this
+                  response type, version string is sent in header
+                  `Eth-Consensus-Version`.
+        '400':
+          description: Invalid block production request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/http_ErrorMessage'
+              examples:
+                InvalidRequest:
+                  value:
+                    code: 400
+                    message: Invalid request to produce a block
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/attestation_data:
+    get:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      operationId: produceAttestationData
+      summary: Produce an attestation data
+      description: >
+        Requests that the beacon node produce an AttestationData.
+
+
+        A 503 error must be returned if the block identified by the response
+
+        `beacon_block_root` is optimistic (i.e. the attestation attests to a
+        block
+
+        that has not been fully verified by an execution engine).
+      parameters:
+        - name: slot
+          in: query
+          required: true
+          description: The slot for which an attestation data should be created.
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+        - name: committee_index
+          in: query
+          description: The committee index for which an attestation data should be created.
+          required: true
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: ProduceAttestationDataResponse
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/attestation_AttestationData'
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/aggregate_attestation:
+    get:
+      operationId: getAggregatedAttestation
+      summary: Get aggregated attestation
+      description: >
+        Aggregates all attestations matching given attestation data root and
+        slot.
+
+
+        A 503 error must be returned if the block identified by the response
+
+        `beacon_block_root` is optimistic (i.e. the aggregated attestation
+        attests
+
+        to a block that has not been fully verified by an execution engine).
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      parameters:
+        - name: attestation_data_root
+          in: query
+          required: true
+          description: HashTreeRoot of AttestationData that validator wants aggregated
+          schema:
+            $ref: '#/components/schemas/primitive_Root'
+        - name: slot
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+      responses:
+        '200':
+          description: >-
+            Returns aggregated `Attestation` object with same `AttestationData`
+            root.
+          content:
+            application/json:
+              schema:
+                title: GetAggregatedAttestationResponse
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/attestation_Attestation'
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '404':
+          $ref: '#/components/responses/http_NotFound'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/validator/aggregate_and_proofs:
+    post:
+      operationId: publishAggregateAndProofs
+      summary: Publish multiple aggregate and proofs
+      description: >-
+        Verifies given aggregate and proofs and publishes them on appropriate
+        gossipsub topic.
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/validator_SignedAggregateAndProof'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/validator/beacon_committee_subscriptions:
+    post:
+      operationId: prepareBeaconCommitteeSubnet
+      summary: Signal beacon node to prepare for a committee subnet
+      description: |
+        After beacon node receives this request,
+        search using discv5 for peers related to this subnet
+        and replace current peers with those ones if necessary
+        If validator `is_aggregator`, beacon node must:
+        - announce subnet topic subscription on gossipsub
+        - aggregate attestations received on that subnet
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: SubscribeToBeaconCommitteeSubnetRequestBody
+              type: array
+              items:
+                type: object
+                properties:
+                  validator_index:
+                    $ref: '#/components/schemas/primitive_Uint64'
+                  committee_index:
+                    $ref: '#/components/schemas/primitive_Uint64'
+                  committees_at_slot:
+                    allOf:
+                      - $ref: '#/components/schemas/primitive_Uint64'
+                      - description: Number of committees at the returned slot
+                  slot:
+                    allOf:
+                      - $ref: '#/components/schemas/primitive_Uint64'
+                      - description: >-
+                          Should be slot at which validator is assigned to
+                          attest
+                  is_aggregator:
+                    type: boolean
+                    description: >-
+                      Signals to BN that a validator on the VC has been chosen
+                      for aggregator role.
+      responses:
+        '200':
+          description: >
+            Slot signature is valid and beacon node has prepared the attestation
+            subnet.
+
+
+            Note that we cannot be certain the Beacon node will find peers for
+            that subnet for various reasons.
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/sync_committee_subscriptions:
+    post:
+      operationId: prepareSyncCommitteeSubnets
+      summary: Subscribe to sync committee subnets
+      description: >
+        Subscribe to a number of sync committee subnets
+
+
+        Sync committees are not present in phase0, but are required for Altair
+        networks.
+
+
+        Subscribing to sync committee subnets is an action performed by VC to
+        enable network participation in Altair networks, and only required if
+        the VC has an active validator in an active sync committee.
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncCommitteeSubscription'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/validator/sync_committee_contribution:
+    get:
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      operationId: produceSyncCommitteeContribution
+      summary: Produce a sync committee contribution
+      description: >
+        Requests that the beacon node produce a sync committee contribution.
+
+
+        A 503 error must be returned if the block identified by the response
+
+        `beacon_block_root` is optimistic (i.e. the sync committee contribution
+
+        refers to a block that has not been fully verified by an execution
+        engine).
+      parameters:
+        - name: slot
+          in: query
+          required: true
+          description: The slot for which a sync committee contribution should be created.
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+        - name: subcommittee_index
+          in: query
+          description: the subcommittee index for which to produce the contribution.
+          required: true
+          schema:
+            $ref: '#/components/schemas/primitive_Uint64'
+        - name: beacon_block_root
+          in: query
+          description: the block root for which to produce the contribution.
+          required: true
+          schema:
+            $ref: '#/components/schemas/primitive_Root'
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                title: produceSyncCommitteeContributionResponse
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/SyncCommitteeContribution'
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '404':
+          $ref: '#/components/responses/http_NotFound'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+        '503':
+          $ref: '#/components/responses/http_CurrentlySyncing'
+  /eth/v1/validator/contribution_and_proofs:
+    post:
+      operationId: publishContributionAndProofs
+      summary: Publish multiple contribution and proofs
+      description: Publish multiple signed sync committee contribution and proofs
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SignedContributionAndProof'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/validator/prepare_beacon_proposer:
+    post:
+      operationId: prepareBeaconProposer
+      summary: Provide beacon node with proposals for the given validators.
+      description: >
+        Prepares the beacon node for potential proposers by supplying
+        information
+
+        required when proposing blocks for the given validators.  The
+        information
+
+        supplied for each validator index will persist through the epoch in
+        which
+
+        the call is submitted and for a further two epochs after that, or until
+        the
+
+        beacon node restarts.  It is expected that validator clients will send
+        this
+
+        information periodically, for example each epoch, to ensure beacon nodes
+        have
+
+        correct and timely fee recipient information.
+
+
+        Note that there is no guarantee that the beacon node will use the
+        supplied fee
+
+        recipient when creating a block proposal, so on receipt of a proposed
+        block the
+
+        validator should confirm that it finds the fee recipient within the
+        block
+
+        acceptable before signing it.
+
+
+        Also note that requests containing currently inactive or unknown
+        validator
+
+        indices will be accepted, as they may become active at a later epoch.
+      tags:
+        - ValidatorRequiredApi
+        - Validator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  validator_index:
+                    $ref: '#/components/schemas/primitive_Uint64'
+                  fee_recipient:
+                    $ref: '#/components/schemas/primitive_ExecutionAddress'
+      responses:
+        '200':
+          description: |
+            Preparation information has been received.
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/validator/register_validator:
+    post:
+      operationId: registerValidator
+      summary: >-
+        Provide beacon node with registrations for the given validators to the
+        external builder network.
+      description: >
+        Prepares the beacon node for engaging with external builders. The
+
+        information will be sent by the beacon node to the builder network. It
+        is
+
+        expected that the validator client will send this information
+        periodically
+
+        to ensure the beacon node has correct and timely registration
+        information
+
+        to provide to builders. The validator client should not sign blinded
+        beacon
+
+        blocks that do not adhere to their latest fee recipient and gas limit
+
+        preferences.
+
+
+        Note that requests containing currently inactive or unknown validator
+
+        pubkeys will be accepted, as they may become active at a later epoch.
+      tags:
+        - Validator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/registration_SignedValidatorRegistration'
+      responses:
+        '200':
+          description: Registration information has been received.
+        '400':
+          $ref: '#/components/responses/http_InvalidRequest'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+  /eth/v1/events:
+    get:
+      operationId: eventstream
+      summary: Subscribe to beacon node events
+      tags:
+        - Events
+        - ValidatorRequiredApi
+      description: >
+        Provides endpoint to subscribe to beacon node Server-Sent-Events stream.
+
+        Consumers should use
+        [eventsource](https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface)
+
+        implementation to listen on those events.
+
+
+        Servers _may_ send SSE comments beginning with `:` for any purpose,
+        including to keep the
+
+        event stream connection alive in the presence of proxy servers.
+      parameters:
+        - name: topics
+          in: query
+          required: true
+          description: Event types to subscribe to
+          schema:
+            type: array
+            items:
+              type: string
+              uniqueItems: true
+              enum:
+                - head
+                - block
+                - attestation
+                - voluntary_exit
+                - finalized_checkpoint
+                - chain_reorg
+                - contribution_and_proof
+      responses:
+        '200':
+          description: Opened SSE stream.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: >-
+                  https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format
+              examples:
+                head:
+                  description: >-
+                    The node has finished processing, resulting in a new head.
+                    previous_duty_dependent_root is
+                    `get_block_root_at_slot(state,
+                    compute_start_slot_at_epoch(epoch - 1) - 1)` and
+                    current_duty_dependent_root is
+                    `get_block_root_at_slot(state,
+                    compute_start_slot_at_epoch(epoch) - 1)`. Both dependent
+                    roots use the genesis block root in the case of underflow.
+                  value: >
+                    event: head
+
+                    data: {"slot":"10",
+                    "block":"0x9a2fefd2fdb57f74993c7780ea5b9030d2897b615b89f808011ca5aebed54eaf",
+                    "state":"0x600e852a08c1200654ddf11025f1ceacb3c2e74bdd5c630cde0838b2591b69f9",
+                    "epoch_transition":false,
+                    "previous_duty_dependent_root":"0x5e0043f107cb57913498fbf2f99ff55e730bf1e151f02f221e977c91a90a0e91",
+                    "current_duty_dependent_root":"0x5e0043f107cb57913498fbf2f99ff55e730bf1e151f02f221e977c91a90a0e91",
+                    "execution_optimistic": false}
+                block:
+                  description: The node has received a valid block (from P2P or API)
+                  value: >
+                    event: block
+
+                    data: {"slot":"10",
+                    "block":"0x9a2fefd2fdb57f74993c7780ea5b9030d2897b615b89f808011ca5aebed54eaf",
+                    "execution_optimistic": false}
+                attestation:
+                  description: The node has received a valid attestation (from P2P or API)
+                  value: >
+                    event: attestation
+
+                    data: {"aggregation_bits":"0x01",
+                    "signature":"0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505",
+                    "data":{"slot":"1", "index":"1",
+                    "beacon_block_root":"0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2",
+                    "source":{"epoch":"1",
+                    "root":"0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2"},
+                    "target":{"epoch":"1",
+                    "root":"0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2"}}}
+                voluntary_exit:
+                  description: >-
+                    The node has received a valid voluntary exit (from P2P or
+                    API)
+                  value: >
+                    event: voluntary_exit
+
+                    data: {"message":{"epoch":"1", "validator_index":"1"},
+                    "signature":"0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505"}
+                finalized_checkpoint:
+                  description: Finalized checkpoint has been updated
+                  value: >
+                    event: finalized_checkpoint
+
+                    data:
+                    {"block":"0x9a2fefd2fdb57f74993c7780ea5b9030d2897b615b89f808011ca5aebed54eaf",
+                    "state":"0x600e852a08c1200654ddf11025f1ceacb3c2e74bdd5c630cde0838b2591b69f9",
+                    "epoch":"2", "execution_optimistic": false }
+                chain_reorg:
+                  description: The node has reorganized its chain
+                  value: >
+                    event: chain_reorg
+
+                    data: {"slot":"200", "depth":"50",
+                    "old_head_block":"0x9a2fefd2fdb57f74993c7780ea5b9030d2897b615b89f808011ca5aebed54eaf",
+                    "new_head_block":"0x76262e91970d375a19bfe8a867288d7b9cde43c8635f598d93d39d041706fc76",
+                    "old_head_state":"0x9a2fefd2fdb57f74993c7780ea5b9030d2897b615b89f808011ca5aebed54eaf",
+                    "new_head_state":"0x600e852a08c1200654ddf11025f1ceacb3c2e74bdd5c630cde0838b2591b69f9",
+                    "epoch":"2", "execution_optimistic": false}
+                contribution_and_proof:
+                  description: >-
+                    The node has received a valid sync committee
+                    SignedContributionAndProof (from P2P or API)
+                  value: >
+                    event: contribution_and_proof
+
+                    data: {"message": {"aggregator_index": "997",
+                    "contribution": {"slot": "168097", "beacon_block_root":
+                    "0x56f1fd4262c08fa81e27621c370e187e621a67fc80fe42340b07519f84b42ea1",
+                    "subcommittee_index": "0", "aggregation_bits":
+                    "0xffffffffffffffffffffffffffffffff", "signature":
+                    "0x85ab9018e14963026476fdf784cc674da144b3dbdb47516185438768774f077d882087b90ad642469902e782a8b43eed0cfc1b862aa9a473b54c98d860424a702297b4b648f3f30bdaae8a8b7627d10d04cb96a2cc8376af3e54a9aa0c8145e3"},
+                    "selection_proof":
+                    "0x87c305f04bfe5db27c2b19fc23e00d7ac496ec7d3e759cbfdd1035cb8cf6caaa17a36a95a08ba78c282725e7b66a76820ca4eb333822bd399ceeb9807a0f2926c67ce67cfe06a0b0006838203b493505a8457eb79913ce1a3bcd1cc8e4ef30ed"},
+                    "signature":
+                    "0xac118511474a94f857300b315c50585c32a713e4452e26a6bb98cdb619936370f126ed3b6bb64469259ee92e69791d9e12d324ce6fd90081680ce72f39d85d50b0ff977260a8667465e613362c6d6e6e745e1f9323ec1d6f16041c4e358839ac"}
+        '400':
+          description: The topics supplied could not be parsed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/http_ErrorMessage'
+                  - example:
+                      code: 400
+                      message: 'Invalid topic: weather_forecast'
+        '500':
+          $ref: '#/components/responses/http_InternalError'
+components:
+  schemas:
+    BeaconState:
+      type: object
+      description: >-
+        The
+        [`BeaconState`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblock)
+        object from the CL spec.
+      properties:
+        genesis_time:
+          $ref: '#/components/schemas/primitive_Uint64'
+        genesis_validators_root:
+          $ref: '#/components/schemas/primitive_Root'
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        fork:
+          $ref: '#/components/schemas/misc_Fork'
+        latest_block_header:
+          $ref: '#/components/schemas/BeaconBlockHeader'
+        block_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        state_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        historical_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          maxItems: 16777216
+        eth1_data:
+          $ref: '#/components/schemas/Eth1Data'
+        eth1_data_votes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Eth1Data'
+          maxItems: 1024
+        eth1_deposit_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        validators:
+          type: array
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Validator'
+        balances:
+          type: array
+          description: Validator balances in gwei
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+        randao_mixes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Bytes32'
+          minItems: 65536
+          maxItems: 65536
+        slashings:
+          type: array
+          description: Per-epoch sums of slashed effective balances
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+          minItems: 8192
+          maxItems: 8192
+        previous_epoch_attestations:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/PendingAttestation'
+        current_epoch_attestations:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/PendingAttestation'
+        justification_bits:
+          type: string
+          pattern: ^0x[a-fA-F0-9]+$
+          example: '0x01'
+          description: Bit set for every recent justified epoch
+        previous_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        current_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        finalized_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+    BeaconBlock:
+      description: >-
+        The
+        [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblock)
+        object from the CL spec.
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockCommon'
+        - type: object
+          properties:
+            body:
+              $ref: '#/components/schemas/BeaconBlockBody'
+    SignedBeaconBlock:
+      type: object
+      description: >-
+        The
+        [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblock)
+        object envelope from the CL spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/block_BeaconBlock'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    SignedBeaconBlockHeader:
+      type: object
+      description: >-
+        The
+        [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader)
+        object envelope from the CL spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/BeaconBlockHeader'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    ValidatorResponse:
+      type: object
+      properties:
+        index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        balance:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Current validator balance in gwei.
+        status:
+          $ref: '#/components/schemas/api_ValidatorStatus'
+        validator:
+          $ref: '#/components/schemas/Validator'
+    ValidatorBalanceResponse:
+      type: object
+      properties:
+        index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        balance:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Current validator balance in gwei.
+    ValidatorStatus:
+      description: >
+        Possible statuses:
+
+        - **pending_initialized** - When the first deposit is processed, but not
+        enough funds are available (or not yet the end of the first epoch) to
+        get validator into the activation queue.
+
+        - **pending_queued** - When validator is waiting to get activated, and
+        have enough funds etc. while in the queue, validator activation epoch
+        keeps changing until it gets to the front and make it through
+        (finalization is a requirement here too).
+
+        - **active_ongoing** - When validator must be attesting, and have not
+        initiated any exit.
+
+        - **active_exiting** - When validator is still active, but filed a
+        voluntary request to exit.
+
+        - **active_slashed** - When validator is still active, but have a
+        slashed status and is scheduled to exit.
+
+        - **exited_unslashed** - When validator has reached reguler exit epoch,
+        not being slashed, and doesn't have to attest any more, but cannot
+        withdraw yet.
+
+        - **exited_slashed** - When validator has reached reguler exit epoch,
+        but was slashed, have to wait for a longer withdrawal period.
+
+        - **withdrawal_possible** - After validator has exited, a while later is
+        permitted to move funds, and is truly out of the system.
+
+        - **withdrawal_done** - (not possible in phase0, except slashing full
+        balance) - actually having moved funds away
+
+
+        [Validator status
+        specification](https://hackmd.io/ofFJ5gOmQpu1jjHilHbdQQ)
+      enum:
+        - pending_initialized
+        - pending_queued
+        - active_ongoing
+        - active_exiting
+        - active_slashed
+        - exited_unslashed
+        - exited_slashed
+        - withdrawal_possible
+        - withdrawal_done
+      example: active_ongoing
+    Committee:
+      description: >-
+        Group of validators assigned to attest at specific slot and that have
+        the same committee index (shard in phase 1)
+      type: object
+      properties:
+        index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Committee index at a slot
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        validators:
+          type: array
+          description: List of validator indices assigned to this committee
+          items:
+            $ref: '#/components/schemas/primitive_Uint64'
+    AttesterSlashing:
+      type: object
+      description: >-
+        The
+        [`AttesterSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/core/0_beacon-chain.md#attesterslashing)
+        object from the CL spec.
+      properties:
+        attestation_1:
+          $ref: '#/components/schemas/IndexedAttestation'
+        attestation_2:
+          $ref: '#/components/schemas/IndexedAttestation'
+    ProposerSlashing:
+      type: object
+      description: >-
+        The
+        [`ProposerSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#proposerslashing)
+        object from the CL spec.
+      properties:
+        signed_header_1:
+          $ref: '#/components/schemas/block_SignedBeaconBlockHeader'
+        signed_header_2:
+          $ref: '#/components/schemas/block_SignedBeaconBlockHeader'
+    SignedVoluntaryExit:
+      type: object
+      description: >-
+        The
+        [`SignedVoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedvoluntaryexit)
+        object from the CL spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/VoluntaryExit'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    AttesterDuty:
+      type: object
+      properties:
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+        validator_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry
+        committee_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The committee index
+        committee_length:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Number of validators in committee
+        committees_at_slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Number of committees at the provided slot
+        validator_committee_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in committee
+        slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The slot at which the validator must attest.
+    ProposerDuty:
+      type: object
+      properties:
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+        validator_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The slot at which the validator must propose block.
+    Altair.SyncDuty:
+      $ref: '#/components/schemas/SyncDuty'
+    SignedAggregateAndProof:
+      description: >-
+        The
+        [`SignedAggregateAndProof`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/validator.md#signedaggregateandproof)
+        object
+      properties:
+        message:
+          $ref: '#/components/schemas/AggregateAndProof'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    Attestation:
+      type: object
+      description: >-
+        The
+        [`Attestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestation)
+        object from the CL spec.
+      properties:
+        aggregation_bits:
+          type: string
+          example: '0x01'
+          pattern: ^0x[a-fA-F0-9]+$
+          description: Attester aggregation bits.
+        signature:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: BLS aggregate signature.
+        data:
+          $ref: '#/components/schemas/attestation_AttestationData'
+    AttestationData:
+      type: object
+      description: >-
+        The
+        [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata)
+        object from the CL spec.
+      properties:
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        beacon_block_root:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: LMD GHOST vote.
+        source:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        target:
+          $ref: '#/components/schemas/misc_Checkpoint'
+    Fork:
+      type: object
+      description: >-
+        The
+        [`Fork`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#fork)
+        object from the CL spec.
+      properties:
+        previous_version:
+          $ref: '#/components/schemas/primitive_ForkVersion'
+        current_version:
+          $ref: '#/components/schemas/primitive_ForkVersion'
+        epoch:
+          $ref: '#/components/schemas/primitive_Uint64'
+    Checkpoint:
+      type: object
+      description: >-
+        The
+        [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint
+      properties:
+        epoch:
+          $ref: '#/components/schemas/primitive_Uint64'
+        root:
+          $ref: '#/components/schemas/primitive_Root'
+    Uint64:
+      type: string
+      example: '1'
+    NetworkIdentity:
+      type: object
+      properties:
+        peer_id:
+          $ref: '#/components/schemas/p2p_PeerId'
+        enr:
+          $ref: '#/components/schemas/ENR'
+        p2p_addresses:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Multiaddr'
+              - description: >-
+                  Node's addresses on which eth2 rpc requests are served. [Read
+                  more](https://docs.libp2p.io/reference/glossary/#multiaddr)
+        discovery_addresses:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Multiaddr'
+              - description: >-
+                  Node's addresses on which is listening for discv5 requests.
+                  [Read
+                  more](https://docs.libp2p.io/reference/glossary/#multiaddr)
+              - example: >-
+                  /ip4/7.7.7.7/udp/30303/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N
+        metadata:
+          $ref: '#/components/schemas/MetaData'
+    Peer:
+      type: object
+      properties:
+        peer_id:
+          $ref: '#/components/schemas/p2p_PeerId'
+        enr:
+          allOf:
+            - $ref: '#/components/schemas/ENR'
+            - nullable: true
+        last_seen_p2p_address:
+          allOf:
+            - $ref: '#/components/schemas/Multiaddr'
+            - description: Multiaddrs used in last peer connection.
+        state:
+          $ref: '#/components/schemas/p2p_PeerConnectionState'
+        direction:
+          $ref: '#/components/schemas/p2p_PeerConnectionDirection'
+    PeerId:
+      type: string
+      description: >-
+        Cryptographic hash of a peer’s public key. [Read
+        more](https://docs.libp2p.io/concepts/peer-id/)
+      example: QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N
+    PeerConnectionState:
+      type: string
+      enum:
+        - disconnected
+        - connecting
+        - connected
+        - disconnecting
+    PeerConnectionDirection:
+      type: string
+      enum:
+        - inbound
+        - outbound
+    GenesisTime:
+      allOf:
+        - $ref: '#/components/schemas/primitive_Uint64'
+        - example: '1590832934'
+        - description: >-
+            The genesis_time configured for the beacon node, which is the unix
+            time in seconds at which the Eth2.0 chain began.
+    Version:
+      type: string
+      description: >-
+        A string which uniquely identifies the client implementation and its
+        version; similar to [HTTP
+        User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3).
+      example: Lighthouse/v0.1.5 (Linux x86_64)
+    ForkVersion:
+      type: string
+      description: a fork version number
+      example: '0x00000000'
+      pattern: ^0x[a-fA-F0-9]{8}$
+    DependentRoot:
+      allOf:
+        - $ref: '#/components/schemas/primitive_Root'
+        - description: The block root that this response is dependent on.
+    ExecutionOptimistic:
+      allOf:
+        - type: boolean
+        - example: false
+        - description: >-
+            True if the response references an unverified execution payload.
+            Optimistic information may be invalidated at a later time. If the
+            field is not present, assume the False value.
+    Root:
+      type: string
+      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+      pattern: ^0x[a-fA-F0-9]{64}$
+    Hex:
+      type: string
+      pattern: ^0x[a-fA-F0-9]{2,}$
+    Graffiti:
+      type: string
+      format: hex
+      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+      pattern: ^0x[a-fA-F0-9]{64}$
+    Signature:
+      type: string
+      pattern: ^0x[a-fA-F0-9]{192}$
+      example: >-
+        0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505
+    ErrorMessage:
+      type: object
+      properties:
+        code:
+          description: >-
+            Either specific error code in case of invalid request or http status
+            code
+          type: number
+          example: 404
+        message:
+          description: Message describing error
+          type: string
+        stacktraces:
+          description: Optional stacktraces, sent when node is in debug mode
+          type: array
+          items:
+            type: string
+    IndexedErrorMessage:
+      type: object
+      properties:
+        code:
+          description: >-
+            Either specific error code in case of invalid request or http status
+            code
+          type: number
+          example: 400
+        message:
+          description: Message describing error
+          type: string
+          example: some failures
+        failures:
+          description: List of individual items that have failed
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                description: Index of item in the request list that caused the error
+                type: number
+                example: 3
+              message:
+                description: Message describing error
+                type: string
+                example: invalid signature
+    Altair.SignedBeaconBlock:
+      $ref: '#/components/schemas/Altair-SignedBeaconBlock'
+    Altair.BeaconBlock:
+      $ref: '#/components/schemas/Altair-BeaconBlock'
+    Altair.BeaconState:
+      $ref: '#/components/schemas/Altair-BeaconState'
+    Altair.SyncCommitteeSignature:
+      $ref: '#/components/schemas/SyncCommitteeSignature'
+    Altair.SyncCommitteeSubscription:
+      $ref: '#/components/schemas/SyncCommitteeSubscription'
+    Altair.ContributionAndProof:
+      $ref: '#/components/schemas/ContributionAndProof'
+    Altair.SignedContributionAndProof:
+      $ref: '#/components/schemas/SignedContributionAndProof'
+    Altair.SyncCommitteeContribution:
+      $ref: '#/components/schemas/SyncCommitteeContribution'
+    Altair.SyncCommittee:
+      $ref: '#/components/schemas/SyncCommitteeByValidatorIndices'
+    ExecutionAddress:
+      type: string
+      description: An address on the execution (Ethereum 1) network.
+      example: '0xabcf8e0d4e9587369b2301d0790347320302cc09'
+      pattern: ^0x[a-fA-F0-9]{40}$
+    Bellatrix.BeaconState:
+      $ref: '#/components/schemas/Bellatrix-BeaconState'
+    Bellatrix.BeaconBlock:
+      $ref: '#/components/schemas/Bellatrix-BeaconBlock'
+    Bellatrix.SignedBeaconBlock:
+      $ref: '#/components/schemas/Bellatrix-SignedBeaconBlock'
+    Bellatrix.BlindedBeaconBlock:
+      $ref: '#/components/schemas/BlindedBeaconBlock'
+    Bellatrix.SignedBlindedBeaconBlock:
+      $ref: '#/components/schemas/SignedBlindedBeaconBlock'
+    ConsensusVersion:
+      enum:
+        - phase0
+        - altair
+        - bellatrix
+      example: phase0
+    SignedValidatorRegistration:
+      type: object
+      description: >-
+        The `SignedValidatorRegistration` object from the Builder API
+        specification.
+      properties:
+        message:
+          $ref: '#/components/schemas/ValidatorRegistration'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    primitive_Uint64:
+      type: string
+      example: '1'
+    primitive_GenesisTime:
+      allOf:
+        - $ref: '#/components/schemas/primitive_Uint64'
+        - example: '1590832934'
+        - description: >-
+            The genesis_time configured for the beacon node, which is the unix
+            time in seconds at which the Eth2.0 chain began.
+    primitive_Root:
+      type: string
+      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+      pattern: ^0x[a-fA-F0-9]{64}$
+    primitive_ForkVersion:
+      type: string
+      description: a fork version number
+      example: '0x00000000'
+      pattern: ^0x[a-fA-F0-9]{8}$
+    http_ErrorMessage:
+      type: object
+      properties:
+        code:
+          description: >-
+            Either specific error code in case of invalid request or http status
+            code
+          type: number
+          example: 404
+        message:
+          description: Message describing error
+          type: string
+        stacktraces:
+          description: Optional stacktraces, sent when node is in debug mode
+          type: array
+          items:
+            type: string
+    primitive_ExecutionOptimistic:
+      allOf:
+        - type: boolean
+        - example: false
+        - description: >-
+            True if the response references an unverified execution payload.
+            Optimistic information may be invalidated at a later time. If the
+            field is not present, assume the False value.
+    misc_Fork:
+      type: object
+      description: >-
+        The
+        [`Fork`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#fork)
+        object from the CL spec.
+      properties:
+        previous_version:
+          $ref: '#/components/schemas/primitive_ForkVersion'
+        current_version:
+          $ref: '#/components/schemas/primitive_ForkVersion'
+        epoch:
+          $ref: '#/components/schemas/primitive_Uint64'
+    misc_Checkpoint:
+      type: object
+      description: >-
+        The
+        [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint
+      properties:
+        epoch:
+          $ref: '#/components/schemas/primitive_Uint64'
+        root:
+          $ref: '#/components/schemas/primitive_Root'
+    api_ValidatorStatus:
+      description: >
+        Possible statuses:
+
+        - **pending_initialized** - When the first deposit is processed, but not
+        enough funds are available (or not yet the end of the first epoch) to
+        get validator into the activation queue.
+
+        - **pending_queued** - When validator is waiting to get activated, and
+        have enough funds etc. while in the queue, validator activation epoch
+        keeps changing until it gets to the front and make it through
+        (finalization is a requirement here too).
+
+        - **active_ongoing** - When validator must be attesting, and have not
+        initiated any exit.
+
+        - **active_exiting** - When validator is still active, but filed a
+        voluntary request to exit.
+
+        - **active_slashed** - When validator is still active, but have a
+        slashed status and is scheduled to exit.
+
+        - **exited_unslashed** - When validator has reached reguler exit epoch,
+        not being slashed, and doesn't have to attest any more, but cannot
+        withdraw yet.
+
+        - **exited_slashed** - When validator has reached reguler exit epoch,
+        but was slashed, have to wait for a longer withdrawal period.
+
+        - **withdrawal_possible** - After validator has exited, a while later is
+        permitted to move funds, and is truly out of the system.
+
+        - **withdrawal_done** - (not possible in phase0, except slashing full
+        balance) - actually having moved funds away
+
+
+        [Validator status
+        specification](https://hackmd.io/ofFJ5gOmQpu1jjHilHbdQQ)
+      enum:
+        - pending_initialized
+        - pending_queued
+        - active_ongoing
+        - active_exiting
+        - active_slashed
+        - exited_unslashed
+        - exited_slashed
+        - withdrawal_possible
+        - withdrawal_done
+      example: active_ongoing
+    Pubkey:
+      type: string
+      pattern: ^0x[a-fA-F0-9]{96}$
+      description: >-
+        The validator's BLS public key, uniquely identifying them. _48-bytes,
+        hex encoded with 0x prefix, case insensitive._
+      example: >-
+        0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a
+    Validator:
+      type: object
+      properties:
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+        withdrawal_credentials:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: Root of withdrawal credentials
+        effective_balance:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Balance at stake in Gwei.
+        slashed:
+          type: boolean
+          example: false
+          description: Was validator slashed (not longer active).
+        activation_eligibility_epoch:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: When criteria for activation were met.
+        activation_epoch:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: >-
+                Epoch when validator activated. 'FAR_FUTURE_EPOCH' if not
+                activated
+        exit_epoch:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Epoch when validator exited. 'FAR_FUTURE_EPOCH' if not exited.
+        withdrawable_epoch:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: >-
+                When validator can withdraw or transfer funds.
+                'FAR_FUTURE_EPOCH' if not defined
+    api_ValidatorResponse:
+      type: object
+      properties:
+        index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        balance:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Current validator balance in gwei.
+        status:
+          $ref: '#/components/schemas/api_ValidatorStatus'
+        validator:
+          $ref: '#/components/schemas/Validator'
+    api_ValidatorBalanceResponse:
+      type: object
+      properties:
+        index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        balance:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Current validator balance in gwei.
+    api_Committee:
+      description: >-
+        Group of validators assigned to attest at specific slot and that have
+        the same committee index (shard in phase 1)
+      type: object
+      properties:
+        index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Committee index at a slot
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        validators:
+          type: array
+          description: List of validator indices assigned to this committee
+          items:
+            $ref: '#/components/schemas/primitive_Uint64'
+    ValidatorsByIndex:
+      type: array
+      items:
+        allOf:
+          - $ref: '#/components/schemas/primitive_Uint64'
+    SyncCommitteeByValidatorIndices:
+      type: object
+      properties:
+        validators:
+          allOf:
+            - $ref: '#/components/schemas/ValidatorsByIndex'
+            - description: all of the validator indices in the current sync committee
+        validator_aggregates:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/ValidatorsByIndex'
+              - description: Subcommittee slices of the current sync committee
+    BeaconBlockCommon:
+      type: object
+      properties:
+        slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The slot to which this block corresponds.
+        proposer_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        parent_root:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: The signing merkle root of the parent `BeaconBlock`.
+        state_root:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: >-
+                The tree hash merkle root of the `BeaconState` for the
+                `BeaconBlock`.
+    BeaconBlockHeader:
+      description: >-
+        The
+        [`BeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader)
+        object from the CL spec.
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockCommon'
+        - type: object
+          properties:
+            body_root:
+              allOf:
+                - $ref: '#/components/schemas/primitive_Root'
+                - description: >-
+                    The tree hash merkle root of the `BeaconBlockBody` for the
+                    `BeaconBlock`
+    primitive_Signature:
+      type: string
+      pattern: ^0x[a-fA-F0-9]{192}$
+      example: >-
+        0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505
+    block_SignedBeaconBlockHeader:
+      type: object
+      description: >-
+        The
+        [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader)
+        object envelope from the CL spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/BeaconBlockHeader'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    Eth1Data:
+      type: object
+      description: >-
+        The
+        [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#eth1data)
+        object from the CL spec.
+      properties:
+        deposit_root:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: Root of the deposit tree.
+        deposit_count:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Total number of deposits.
+        block_hash:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: Ethereum 1.x block hash.
+    proposer_slashing_ProposerSlashing:
+      type: object
+      description: >-
+        The
+        [`ProposerSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#proposerslashing)
+        object from the CL spec.
+      properties:
+        signed_header_1:
+          $ref: '#/components/schemas/block_SignedBeaconBlockHeader'
+        signed_header_2:
+          $ref: '#/components/schemas/block_SignedBeaconBlockHeader'
+    attestation_AttestationData:
+      type: object
+      description: >-
+        The
+        [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata)
+        object from the CL spec.
+      properties:
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        beacon_block_root:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: LMD GHOST vote.
+        source:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        target:
+          $ref: '#/components/schemas/misc_Checkpoint'
+    IndexedAttestation:
+      type: object
+      description: >-
+        The
+        [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation)
+        object from the CL spec.
+      properties:
+        attesting_indices:
+          type: array
+          maxItems: 2048
+          description: Attesting validator indices
+          items:
+            $ref: '#/components/schemas/primitive_Uint64'
+        signature:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: >-
+                The BLS signature of the `IndexedAttestation`, created by the
+                validator of the attestation.
+        data:
+          $ref: '#/components/schemas/attestation_AttestationData'
+    attester_slashing_AttesterSlashing:
+      type: object
+      description: >-
+        The
+        [`AttesterSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/core/0_beacon-chain.md#attesterslashing)
+        object from the CL spec.
+      properties:
+        attestation_1:
+          $ref: '#/components/schemas/IndexedAttestation'
+        attestation_2:
+          $ref: '#/components/schemas/IndexedAttestation'
+    attestation_Attestation:
+      type: object
+      description: >-
+        The
+        [`Attestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestation)
+        object from the CL spec.
+      properties:
+        aggregation_bits:
+          type: string
+          example: '0x01'
+          pattern: ^0x[a-fA-F0-9]+$
+          description: Attester aggregation bits.
+        signature:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: BLS aggregate signature.
+        data:
+          $ref: '#/components/schemas/attestation_AttestationData'
+    DepositData:
+      type: object
+      description: >-
+        The
+        [`DepositData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#depositdata)
+        object from the CL spec.
+      properties:
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+        withdrawal_credentials:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: The withdrawal credentials.
+        amount:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Amount in Gwei.
+        signature:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: Container self-signature.
+    Deposit:
+      type: object
+      description: >-
+        The
+        [`Deposit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#deposit)
+        object from the CL spec.
+      properties:
+        proof:
+          type: array
+          description: Branch in the deposit tree.
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 32
+          maxItems: 32
+        data:
+          $ref: '#/components/schemas/DepositData'
+    VoluntaryExit:
+      type: object
+      description: >-
+        The
+        [`VoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#voluntaryexit)
+        object from the CL spec.
+      properties:
+        epoch:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Minimum epoch for processing exit.
+        validator_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of the exiting validator.
+    voluntary_exit_SignedVoluntaryExit:
+      type: object
+      description: >-
+        The
+        [`SignedVoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedvoluntaryexit)
+        object from the CL spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/VoluntaryExit'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    BeaconBlockBody:
+      type: object
+      description: >-
+        The
+        [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockbody)
+        object from the CL spec.
+      properties:
+        randao_reveal:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: The RanDAO reveal value provided by the validator.
+        eth1_data:
+          $ref: '#/components/schemas/Eth1Data'
+        graffiti:
+          type: string
+          pattern: ^0x[a-fA-F0-9]{64}$
+        proposer_slashings:
+          type: array
+          items:
+            $ref: '#/components/schemas/proposer_slashing_ProposerSlashing'
+        attester_slashings:
+          type: array
+          items:
+            $ref: '#/components/schemas/attester_slashing_AttesterSlashing'
+        attestations:
+          type: array
+          items:
+            $ref: '#/components/schemas/attestation_Attestation'
+        deposits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Deposit'
+        voluntary_exits:
+          type: array
+          items:
+            $ref: '#/components/schemas/voluntary_exit_SignedVoluntaryExit'
+    block_BeaconBlock:
+      description: >-
+        The
+        [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblock)
+        object from the CL spec.
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockCommon'
+        - type: object
+          properties:
+            body:
+              $ref: '#/components/schemas/BeaconBlockBody'
+    block_SignedBeaconBlock:
+      type: object
+      description: >-
+        The
+        [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblock)
+        object envelope from the CL spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/block_BeaconBlock'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    SyncAggregate:
+      type: object
+      description: >-
+        The
+        [`SyncAggregate`](https://github.com/ethereum/consensus-specs/blob/v1.1.0-alpha.1/specs/altair/beacon-chain.md#syncaggregate)
+        object from the CL Altair spec.
+      properties:
+        sync_committee_bits:
+          type: string
+          pattern: ^0x[a-fA-F0-9]+$
+          example: '0x01'
+          description: Aggregation bits of sync
+        sync_committee_signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    Altair-BeaconBlockBody:
+      type: object
+      description: >-
+        The
+        [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.0-alpha.3/specs/altair/beacon-chain.md#beaconblockbody)
+        object from the CL Altair spec.
+      properties:
+        randao_reveal:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: The RanDAO reveal value provided by the validator.
+        eth1_data:
+          $ref: '#/components/schemas/Eth1Data'
+        graffiti:
+          type: string
+          pattern: ^0x[a-fA-F0-9]{64}$
+        proposer_slashings:
+          type: array
+          items:
+            $ref: '#/components/schemas/proposer_slashing_ProposerSlashing'
+        attester_slashings:
+          type: array
+          items:
+            $ref: '#/components/schemas/attester_slashing_AttesterSlashing'
+        attestations:
+          type: array
+          items:
+            $ref: '#/components/schemas/attestation_Attestation'
+        deposits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Deposit'
+        voluntary_exits:
+          type: array
+          items:
+            $ref: '#/components/schemas/voluntary_exit_SignedVoluntaryExit'
+        sync_aggregate:
+          $ref: '#/components/schemas/SyncAggregate'
+    Altair-BeaconBlock:
+      description: >-
+        The
+        [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.0-alpha.3/specs/altair/beacon-chain.md#beaconblock)
+        object from the CL Altair spec.
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockCommon'
+        - type: object
+          properties:
+            body:
+              $ref: '#/components/schemas/Altair-BeaconBlockBody'
+    Altair-SignedBeaconBlock:
+      type: object
+      description: >-
+        The
+        [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.0-alpha.3/specs/altair/beacon-chain.md#signedbeaconblock)
+        object envelope from the CL Altair spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/Altair-BeaconBlock'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    BeaconBlockBodyCommon:
+      type: object
+      description: >-
+        The
+        [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody)
+        object from the CL Bellatrix spec.
+      properties:
+        randao_reveal:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: The RanDAO reveal value provided by the validator.
+        eth1_data:
+          $ref: '#/components/schemas/Eth1Data'
+        graffiti:
+          type: string
+          pattern: ^0x[a-fA-F0-9]{64}$
+        proposer_slashings:
+          type: array
+          items:
+            $ref: '#/components/schemas/proposer_slashing_ProposerSlashing'
+        attester_slashings:
+          type: array
+          items:
+            $ref: '#/components/schemas/attester_slashing_AttesterSlashing'
+        attestations:
+          type: array
+          items:
+            $ref: '#/components/schemas/attestation_Attestation'
+        deposits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Deposit'
+        voluntary_exits:
+          type: array
+          items:
+            $ref: '#/components/schemas/voluntary_exit_SignedVoluntaryExit'
+        sync_aggregate:
+          $ref: '#/components/schemas/SyncAggregate'
+    primitive_ExecutionAddress:
+      type: string
+      description: An address on the execution (Ethereum 1) network.
+      example: '0xabcf8e0d4e9587369b2301d0790347320302cc09'
+      pattern: ^0x[a-fA-F0-9]{40}$
+    LogsBloom:
+      type: string
+      example: >-
+        0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      pattern: ^0x[a-fA-F0-9]{512}$
+    Bytes32:
+      type: string
+      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+      pattern: ^0x[a-fA-F0-9]{64}$
+    ExtraData:
+      type: string
+      description: Extra data on the execution (Ethereum 1) network.
+      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+      pattern: ^0x[a-fA-F0-9]{0,64}$
+    Uint256:
+      type: string
+      example: '1'
+    ExecutionPayloadCommon:
+      type: object
+      description: >-
+        The
+        [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayload)
+        object from the CL Bellatrix spec.
+      properties:
+        parent_hash:
+          $ref: '#/components/schemas/primitive_Root'
+        fee_recipient:
+          $ref: '#/components/schemas/primitive_ExecutionAddress'
+        state_root:
+          $ref: '#/components/schemas/primitive_Root'
+        receipts_root:
+          $ref: '#/components/schemas/primitive_Root'
+        logs_bloom:
+          $ref: '#/components/schemas/LogsBloom'
+        prev_randao:
+          $ref: '#/components/schemas/Bytes32'
+        block_number:
+          $ref: '#/components/schemas/primitive_Uint64'
+        gas_limit:
+          $ref: '#/components/schemas/primitive_Uint64'
+        gas_used:
+          $ref: '#/components/schemas/primitive_Uint64'
+        timestamp:
+          $ref: '#/components/schemas/primitive_Uint64'
+        extra_data:
+          $ref: '#/components/schemas/ExtraData'
+        base_fee_per_gas:
+          $ref: '#/components/schemas/Uint256'
+        block_hash:
+          $ref: '#/components/schemas/primitive_Root'
+    ExecutionPayloadHeader:
+      description: >-
+        The
+        [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayloadheader)
+        object from the CL Bellatrix spec.
+      allOf:
+        - $ref: '#/components/schemas/ExecutionPayloadCommon'
+        - type: object
+          properties:
+            transactions_root:
+              $ref: '#/components/schemas/primitive_Root'
+    BlindedBeaconBlockBody:
+      description: >-
+        A variant of the
+        [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody)
+        object from the CL Bellatrix spec, which contains a transactions root
+        rather than a full transactions list.
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockBodyCommon'
+        - type: object
+          properties:
+            execution_payload_header:
+              $ref: '#/components/schemas/ExecutionPayloadHeader'
+    BlindedBeaconBlock:
+      description: >-
+        A variant of the the
+        [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblock)
+        object from the CL Bellatrix spec, which contains a
+        `BlindedBeaconBlockBody` rather than a `BeaconBlockBody`.
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockCommon'
+        - type: object
+          properties:
+            body:
+              $ref: '#/components/schemas/BlindedBeaconBlockBody'
+    SignedBlindedBeaconBlock:
+      type: object
+      description: >-
+        A variant of the the the
+        [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#signedbeaconblock)
+        object envelope from the CL Bellatrix spec, which contains a
+        `BlindedBeaconBlock` rather than a `BeaconBlock`.
+      properties:
+        message:
+          $ref: '#/components/schemas/BlindedBeaconBlock'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    Transaction:
+      type: string
+      description: A transaction on the execution (Ethereum 1) network.
+      example: >-
+        0x02f878831469668303f51d843b9ac9f9843b9aca0082520894c93269b73096998db66be0441e836d873535cb9c8894a19041886f000080c001a031cc29234036afbf9a1fb9476b463367cb1f957ac0b919b69bbc798436e604aaa018c4e9c3914eb27aadd0b91e10b18655739fcf8c1fc398763a9f1beecb8ddc86
+      pattern: ^0x[a-fA-F0-9]{0,2147483648}$
+    Transactions:
+      type: array
+      items:
+        allOf:
+          - $ref: '#/components/schemas/Transaction'
+      maxItems: 1048576
+    ExecutionPayload:
+      allOf:
+        - $ref: '#/components/schemas/ExecutionPayloadCommon'
+        - type: object
+          properties:
+            transactions:
+              $ref: '#/components/schemas/Transactions'
+    Bellatrix-BeaconBlockBody:
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockBodyCommon'
+        - type: object
+          properties:
+            execution_payload:
+              $ref: '#/components/schemas/ExecutionPayload'
+    Bellatrix-BeaconBlock:
+      description: >-
+        The
+        [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblock)
+        object from the CL Bellatrix spec.
+      allOf:
+        - $ref: '#/components/schemas/BeaconBlockCommon'
+        - type: object
+          properties:
+            body:
+              $ref: '#/components/schemas/Bellatrix-BeaconBlockBody'
+    Bellatrix-SignedBeaconBlock:
+      type: object
+      description: >-
+        The
+        [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#signedbeaconblock)
+        object envelope from the CL Bellatrix spec.
+      properties:
+        message:
+          $ref: '#/components/schemas/Bellatrix-BeaconBlock'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    http_IndexedErrorMessage:
+      type: object
+      properties:
+        code:
+          description: >-
+            Either specific error code in case of invalid request or http status
+            code
+          type: number
+          example: 400
+        message:
+          description: Message describing error
+          type: string
+          example: some failures
+        failures:
+          description: List of individual items that have failed
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                description: Index of item in the request list that caused the error
+                type: number
+                example: 3
+              message:
+                description: Message describing error
+                type: string
+                example: invalid signature
+    SyncCommitteeSignature:
+      type: object
+      properties:
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        beacon_block_root:
+          $ref: '#/components/schemas/primitive_Root'
+        validator_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    PendingAttestation:
+      type: object
+      description: >-
+        The
+        [`PendingAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#pendingattestation)
+        object from the CL spec.
+      properties:
+        aggregation_bits:
+          type: string
+          pattern: ^0x[a-fA-F0-9]+$
+          description: Attester aggregation bits.
+        data:
+          $ref: '#/components/schemas/attestation_AttestationData'
+        inclusion_delay:
+          $ref: '#/components/schemas/primitive_Uint64'
+        proposer_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+    state_BeaconState:
+      type: object
+      description: >-
+        The
+        [`BeaconState`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblock)
+        object from the CL spec.
+      properties:
+        genesis_time:
+          $ref: '#/components/schemas/primitive_Uint64'
+        genesis_validators_root:
+          $ref: '#/components/schemas/primitive_Root'
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        fork:
+          $ref: '#/components/schemas/misc_Fork'
+        latest_block_header:
+          $ref: '#/components/schemas/BeaconBlockHeader'
+        block_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        state_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        historical_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          maxItems: 16777216
+        eth1_data:
+          $ref: '#/components/schemas/Eth1Data'
+        eth1_data_votes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Eth1Data'
+          maxItems: 1024
+        eth1_deposit_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        validators:
+          type: array
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Validator'
+        balances:
+          type: array
+          description: Validator balances in gwei
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+        randao_mixes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Bytes32'
+          minItems: 65536
+          maxItems: 65536
+        slashings:
+          type: array
+          description: Per-epoch sums of slashed effective balances
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+          minItems: 8192
+          maxItems: 8192
+        previous_epoch_attestations:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/PendingAttestation'
+        current_epoch_attestations:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/PendingAttestation'
+        justification_bits:
+          type: string
+          pattern: ^0x[a-fA-F0-9]+$
+          example: '0x01'
+          description: Bit set for every recent justified epoch
+        previous_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        current_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        finalized_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+    Uint8:
+      type: string
+      description: Unsigned 8 bit integer, max value 255
+      pattern: ^[1-2]?[0-9]{1,2}$
+      example: '0'
+    EpochParticipation:
+      type: array
+      items:
+        allOf:
+          - $ref: '#/components/schemas/Uint8'
+      maxItems: 1099511627776
+    SyncCommittee:
+      type: object
+      properties:
+        pubkeys:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Pubkey'
+          minItems: 512
+          maxItems: 512
+        aggregate_pubkey:
+          $ref: '#/components/schemas/Pubkey'
+    Altair-BeaconState:
+      type: object
+      description: >-
+        The
+        [`BeaconState`](https://github.com/ethereum/consensus-specs/blob/v1.1.0-alpha.3/specs/altair/beacon-chain.md#beaconstate)
+        object from the CL Altair spec.
+      properties:
+        genesis_time:
+          $ref: '#/components/schemas/primitive_Uint64'
+        genesis_validators_root:
+          $ref: '#/components/schemas/primitive_Root'
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        fork:
+          $ref: '#/components/schemas/misc_Fork'
+        latest_block_header:
+          $ref: '#/components/schemas/BeaconBlockHeader'
+        block_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        state_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        historical_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          maxItems: 16777216
+        eth1_data:
+          $ref: '#/components/schemas/Eth1Data'
+        eth1_data_votes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Eth1Data'
+          maxItems: 1024
+        eth1_deposit_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        validators:
+          type: array
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Validator'
+        balances:
+          type: array
+          description: Validator balances in gwei
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+        randao_mixes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Bytes32'
+          minItems: 65536
+          maxItems: 65536
+        slashings:
+          type: array
+          description: Per-epoch sums of slashed effective balances
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+          minItems: 8192
+          maxItems: 8192
+        previous_epoch_participation:
+          $ref: '#/components/schemas/EpochParticipation'
+        current_epoch_participation:
+          $ref: '#/components/schemas/EpochParticipation'
+        justification_bits:
+          type: string
+          pattern: ^0x[a-fA-F0-9]+$
+          example: '0x01'
+          description: Bit set for every recent justified epoch
+        previous_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        current_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        finalized_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        inactivity_scores:
+          description: Per-validator inactivity scores. New in Altair
+          type: array
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+        current_sync_committee:
+          $ref: '#/components/schemas/SyncCommittee'
+        next_sync_committee:
+          $ref: '#/components/schemas/SyncCommittee'
+    Bellatrix-BeaconState:
+      type: object
+      description: >-
+        The
+        [`BeaconState`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconstate)
+        object from the Eth2.0 Bellatrix spec.
+      properties:
+        genesis_time:
+          $ref: '#/components/schemas/primitive_Uint64'
+        genesis_validators_root:
+          $ref: '#/components/schemas/primitive_Root'
+        slot:
+          $ref: '#/components/schemas/primitive_Uint64'
+        fork:
+          $ref: '#/components/schemas/misc_Fork'
+        latest_block_header:
+          $ref: '#/components/schemas/BeaconBlockHeader'
+        block_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        state_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          minItems: 8192
+          maxItems: 8192
+        historical_roots:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Root'
+          maxItems: 16777216
+        eth1_data:
+          $ref: '#/components/schemas/Eth1Data'
+        eth1_data_votes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Eth1Data'
+          maxItems: 1024
+        eth1_deposit_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        validators:
+          type: array
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Validator'
+        balances:
+          type: array
+          description: Validator balances in gwei
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+        randao_mixes:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Bytes32'
+          minItems: 65536
+          maxItems: 65536
+        slashings:
+          type: array
+          description: Per-epoch sums of slashed effective balances
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+          minItems: 8192
+          maxItems: 8192
+        previous_epoch_participation:
+          $ref: '#/components/schemas/EpochParticipation'
+        current_epoch_participation:
+          $ref: '#/components/schemas/EpochParticipation'
+        justification_bits:
+          type: string
+          pattern: ^0x[a-fA-F0-9]+$
+          example: '0x01'
+          description: Bit set for every recent justified epoch
+        previous_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        current_justified_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        finalized_checkpoint:
+          $ref: '#/components/schemas/misc_Checkpoint'
+        inactivity_scores:
+          description: Per-validator inactivity scores. New in Altair
+          type: array
+          maxItems: 1099511627776
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+        current_sync_committee:
+          $ref: '#/components/schemas/SyncCommittee'
+        next_sync_committee:
+          $ref: '#/components/schemas/SyncCommittee'
+        latest_execution_payload_header:
+          $ref: '#/components/schemas/ExecutionPayloadHeader'
+    p2p_PeerId:
+      type: string
+      description: >-
+        Cryptographic hash of a peer’s public key. [Read
+        more](https://docs.libp2p.io/concepts/peer-id/)
+      example: QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N
+    ENR:
+      type: string
+      description: >-
+        Ethereum node record. [Read
+        more](https://eips.ethereum.org/EIPS/eip-778)
+      example: >-
+        enr:-IS4QHCYrYZbAKWCBRlAy5zzaDZXJBGkcnh4MHcBFZntXNFrdvJjX04jRzjzCBOonrkTfj499SZuOh8R33Ls8RRcy5wBgmlkgnY0gmlwhH8AAAGJc2VjcDI1NmsxoQPKY0yuDUmstAHYpMa2_oxVtw0RW_QAdpzBQA8yWM0xOIN1ZHCCdl8
+    Multiaddr:
+      type: string
+      description: '[Read more](https://docs.libp2p.io/reference/glossary/#multiaddr)'
+      example: /ip4/7.7.7.7/tcp/4242/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N
+    primitive_Hex:
+      type: string
+      pattern: ^0x[a-fA-F0-9]{2,}$
+    MetaData:
+      type: object
+      description: >-
+        Based on eth2 [Metadata
+        object](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/p2p-interface.md#metadata)
+      properties:
+        seq_number:
+          allOf:
+            - description: >-
+                Uint64 starting at 0 used to version the node's metadata. If any
+                other field in the local MetaData changes, the node MUST
+                increment seq_number by 1.
+            - $ref: '#/components/schemas/primitive_Uint64'
+        attnets:
+          allOf:
+            - description: >-
+                Bitvector representing the node's persistent attestation subnet
+                subscriptions.
+            - $ref: '#/components/schemas/primitive_Hex'
+            - example: '0x0000000000000000'
+        syncnets:
+          allOf:
+            - description: >-
+                Bitvector representing the node's sync committee subnet
+                subscriptions. This metadata is not present in phase0, but will
+                be present in Altair.
+            - $ref: '#/components/schemas/primitive_Hex'
+            - example: '0x0f'
+            - required: false
+    p2p_NetworkIdentity:
+      type: object
+      properties:
+        peer_id:
+          $ref: '#/components/schemas/p2p_PeerId'
+        enr:
+          $ref: '#/components/schemas/ENR'
+        p2p_addresses:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Multiaddr'
+              - description: >-
+                  Node's addresses on which eth2 rpc requests are served. [Read
+                  more](https://docs.libp2p.io/reference/glossary/#multiaddr)
+        discovery_addresses:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Multiaddr'
+              - description: >-
+                  Node's addresses on which is listening for discv5 requests.
+                  [Read
+                  more](https://docs.libp2p.io/reference/glossary/#multiaddr)
+              - example: >-
+                  /ip4/7.7.7.7/udp/30303/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N
+        metadata:
+          $ref: '#/components/schemas/MetaData'
+    p2p_PeerConnectionState:
+      type: string
+      enum:
+        - disconnected
+        - connecting
+        - connected
+        - disconnecting
+    p2p_PeerConnectionDirection:
+      type: string
+      enum:
+        - inbound
+        - outbound
+    p2p_Peer:
+      type: object
+      properties:
+        peer_id:
+          $ref: '#/components/schemas/p2p_PeerId'
+        enr:
+          allOf:
+            - $ref: '#/components/schemas/ENR'
+            - nullable: true
+        last_seen_p2p_address:
+          allOf:
+            - $ref: '#/components/schemas/Multiaddr'
+            - description: Multiaddrs used in last peer connection.
+        state:
+          $ref: '#/components/schemas/p2p_PeerConnectionState'
+        direction:
+          $ref: '#/components/schemas/p2p_PeerConnectionDirection'
+    primitive_Version:
+      type: string
+      description: >-
+        A string which uniquely identifies the client implementation and its
+        version; similar to [HTTP
+        User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3).
+      example: Lighthouse/v0.1.5 (Linux x86_64)
+    primitive_DependentRoot:
+      allOf:
+        - $ref: '#/components/schemas/primitive_Root'
+        - description: The block root that this response is dependent on.
+    validator_AttesterDuty:
+      type: object
+      properties:
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+        validator_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry
+        committee_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The committee index
+        committee_length:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Number of validators in committee
+        committees_at_slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Number of committees at the provided slot
+        validator_committee_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in committee
+        slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The slot at which the validator must attest.
+    validator_ProposerDuty:
+      type: object
+      properties:
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+        validator_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The slot at which the validator must propose block.
+    SyncDuty:
+      type: object
+      properties:
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+        validator_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        validator_sync_committee_indices:
+          type: array
+          description: The indices of the validator in the sync committee.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/primitive_Uint64'
+    primitive_Graffiti:
+      type: string
+      format: hex
+      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+      pattern: ^0x[a-fA-F0-9]{64}$
+    Aggregate:
+      type: object
+      description: >-
+        The
+        [`AggregateAndProof`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/validator.md#aggregateandproof)
+        without selection_proof
+      properties:
+        aggregator_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        aggregate:
+          $ref: '#/components/schemas/attestation_Attestation'
+    AggregateAndProof:
+      allOf:
+        - $ref: '#/components/schemas/Aggregate'
+        - type: object
+          properties:
+            selection_proof:
+              $ref: '#/components/schemas/primitive_Signature'
+    validator_SignedAggregateAndProof:
+      description: >-
+        The
+        [`SignedAggregateAndProof`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/validator.md#signedaggregateandproof)
+        object
+      properties:
+        message:
+          $ref: '#/components/schemas/AggregateAndProof'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    SyncCommitteeSubscription:
+      type: object
+      properties:
+        validator_index:
+          $ref: '#/components/schemas/primitive_Uint64'
+        sync_committee_indices:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/primitive_Uint64'
+        until_epoch:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: >-
+                The final epoch (exclusive value) that the specified validator
+                requires the subscription for.
+    SyncCommitteeContribution:
+      type: object
+      properties:
+        slot:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: >-
+                The slot at which the validator is providing a sync committee
+                contribution.
+        beacon_block_root:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Root'
+            - description: Block root for this contribution.
+        subcommittee_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: The index of the subcommittee that the contribution pertains to.
+        aggregation_bits:
+          allOf:
+            - description: >-
+                A bit is set if a signature from the validator at the
+                corresponding index in the subcommittee is present in the
+                aggregate `signature`.
+            - $ref: '#/components/schemas/primitive_Hex'
+            - example: '0x01'
+        signature:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Signature'
+            - description: Signature by the validator(s) over the block root of `slot`
+    ContributionAndProof:
+      type: object
+      properties:
+        aggregator_index:
+          allOf:
+            - $ref: '#/components/schemas/primitive_Uint64'
+            - description: Index of validator in validator registry.
+        selection_proof:
+          $ref: '#/components/schemas/primitive_Signature'
+        contribution:
+          $ref: '#/components/schemas/SyncCommitteeContribution'
+    SignedContributionAndProof:
+      type: object
+      properties:
+        message:
+          $ref: '#/components/schemas/ContributionAndProof'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+    ValidatorRegistration:
+      type: object
+      description: The `ValidatorRegistration` object from the Builder API specification.
+      properties:
+        fee_recipient:
+          $ref: '#/components/schemas/primitive_ExecutionAddress'
+          description: Address to receive fees from the block.
+        gas_limit:
+          $ref: '#/components/schemas/primitive_Uint64'
+          description: Preferred gas limit of validator.
+        timestamp:
+          $ref: '#/components/schemas/primitive_Uint64'
+          description: Unix timestamp of registration.
+        pubkey:
+          $ref: '#/components/schemas/Pubkey'
+          description: BLS public key of validator.
+    registration_SignedValidatorRegistration:
+      type: object
+      description: >-
+        The `SignedValidatorRegistration` object from the Builder API
+        specification.
+      properties:
+        message:
+          $ref: '#/components/schemas/ValidatorRegistration'
+        signature:
+          $ref: '#/components/schemas/primitive_Signature'
+  parameters:
+    StateId:
+      required: true
+      name: state_id
+      in: path
+      example: head
+      schema:
+        type: string
+      description: >
+        State identifier.
+
+        Can be one of: "head" (canonical head in node's view), "genesis",
+        "finalized", "justified", \<slot\>, \<hex encoded stateRoot with 0x
+        prefix\>.
+    BlockId:
+      required: true
+      name: block_id
+      in: path
+      example: head
+      schema:
+        type: string
+      description: >
+        Block identifier.
+
+        Can be one of: "head" (canonical head in node's view), "genesis",
+        "finalized", \<slot\>, \<hex encoded blockRoot with 0x prefix\>.
+    index_StateId:
+      required: true
+      name: state_id
+      in: path
+      example: head
+      schema:
+        type: string
+      description: >
+        State identifier.
+
+        Can be one of: "head" (canonical head in node's view), "genesis",
+        "finalized", "justified", \<slot\>, \<hex encoded stateRoot with 0x
+        prefix\>.
+    index_BlockId:
+      required: true
+      name: block_id
+      in: path
+      example: head
+      schema:
+        type: string
+      description: >
+        Block identifier.
+
+        Can be one of: "head" (canonical head in node's view), "genesis",
+        "finalized", \<slot\>, \<hex encoded blockRoot with 0x prefix\>.
+  responses:
+    InvalidRequest:
+      description: Invalid request syntax.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 400
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 404
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+          example:
+            code: 404
+            message: Requested item not found
+    InternalError:
+      description: Beacon node internal error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 404
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+          example:
+            code: 500
+            message: Internal server error
+    CurrentlySyncing:
+      description: Beacon node is currently syncing, try again later.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 404
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+          example:
+            code: 503
+            message: >-
+              Beacon node is currently syncing and not serving request on that
+              endpoint
+    http_InternalError:
+      description: Beacon node internal error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 404
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+          example:
+            code: 500
+            message: Internal server error
+    http_CurrentlySyncing:
+      description: Beacon node is currently syncing, try again later.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 404
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+          example:
+            code: 503
+            message: >-
+              Beacon node is currently syncing and not serving request on that
+              endpoint
+    http_InvalidRequest:
+      description: Invalid request syntax.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 400
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+    http_NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                description: >-
+                  Either specific error code in case of invalid request or http
+                  status code
+                type: number
+                example: 404
+              message:
+                description: Message describing error
+                type: string
+              stacktraces:
+                description: Optional stacktraces, sent when node is in debug mode
+                type: array
+                items:
+                  type: string
+          example:
+            code: 404
+            message: Requested item not found
+  headers:
+    Eth-Consensus-Version:
+      description: >-
+        Required in response so client can deserialize returned json or ssz data
+        more effectively.
+      required: true
+      schema:
+        $ref: '#/components/schemas/ConsensusVersion'
