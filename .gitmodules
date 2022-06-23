@@ -4,3 +4,6 @@
 [submodule "consensus-specs"]
 	path = consensus-specs
 	url = https://github.com/ethereum/consensus-specs
+[submodule "beacon-apis"]
+	path = beacon-apis
+	url = https://github.com/ethereum/beacon-apis
