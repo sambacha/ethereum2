@@ -1,5 +1,8 @@
 #!/bin/sh
-https://github.com/alexchenzl/predict-analyze
-https://github.com/alexchenzl/trace-helper
-https://github.com/alexchenzl/predict-al
 
+
+perf-modules https://github.com/alexchenzl/predict-analyze
+perf-modules https://github.com/alexchenzl/trace-helper
+perf-modules https://github.com/alexchenzl/predict-al
+
+https://github.com/ethereum/portal-network-specs

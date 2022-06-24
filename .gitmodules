@@ -16,3 +16,6 @@
 [submodule "perf_modules/predict-al"]
 	path = perf_modules/predict-al
 	url = https://github.com/alexchenzl/predict-al
+[submodule "portal-network-specs"]
+	path = portal-network-specs
+	url = https://github.com/ethereum/portal-network-specs
