@@ -7,3 +7,12 @@
 [submodule "beacon-apis"]
 	path = beacon-apis
 	url = https://github.com/ethereum/beacon-apis
+[submodule "perf_modules/predict-analyze"]
+	path = perf_modules/predict-analyze
+	url = https://github.com/alexchenzl/predict-analyze
+[submodule "perf_modules/trace-helper"]
+	path = perf_modules/trace-helper
+	url = https://github.com/alexchenzl/trace-helper
+[submodule "perf_modules/predict-al"]
+	path = perf_modules/predict-al
+	url = https://github.com/alexchenzl/predict-al
