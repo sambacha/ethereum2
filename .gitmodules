@@ -1,11 +1,11 @@
 [submodule "execution-apis"]
-	path = execution-apis
+	path = module_api/execution-apis
 	url = https://github.com/ethereum/execution-apis
 [submodule "consensus-specs"]
-	path = consensus-specs
+	path = module_api/concensus-specs
 	url = https://github.com/ethereum/consensus-specs
 [submodule "beacon-apis"]
-	path = beacon-apis
+	path = module_api/beacon-apis
 	url = https://github.com/ethereum/beacon-apis
 [submodule "perf_modules/predict-analyze"]
 	path = perf_modules/predict-analyze
@@ -17,14 +17,14 @@
 	path = perf_modules/predict-al
 	url = https://github.com/alexchenzl/predict-al
 [submodule "portal-network-specs"]
-	path = portal-network-specs
+	path = module_api/portal-net-specs
 	url = https://github.com/ethereum/portal-network-specs
 [submodule "perf_modules/bls"]
 	path = perf_modules/bls
 	url = https://github.com/herumi/bls
 [submodule "client_modules/teku"]
-	path = client_modules/teku
+	path = module_clients/teku
 	url = https://github.com/ConsenSys/teku
 [submodule "mev-builder-specs"]
-	path = mev-builder-specs
+	path = module_api/mev-builder
 	url = https://github.com/ethereum/builder-specs
