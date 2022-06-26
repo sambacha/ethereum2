@@ -8,19 +8,19 @@
 	path = module_api/beacon-apis
 	url = https://github.com/ethereum/beacon-apis
 [submodule "perf_modules/predict-analyze"]
-	path = perf_modules/predict-analyze
+	path = module_perf/predict-analyze
 	url = https://github.com/alexchenzl/predict-analyze
 [submodule "perf_modules/trace-helper"]
-	path = perf_modules/trace-helper
+	path = module_perf/trace-helper
 	url = https://github.com/alexchenzl/trace-helper
 [submodule "perf_modules/predict-al"]
-	path = perf_modules/predict-al
+	path = module_perf/predict-al
 	url = https://github.com/alexchenzl/predict-al
 [submodule "portal-network-specs"]
 	path = module_api/portal-net-specs
 	url = https://github.com/ethereum/portal-network-specs
 [submodule "perf_modules/bls"]
-	path = perf_modules/bls
+	path = module_perf/bls
 	url = https://github.com/herumi/bls
 [submodule "client_modules/teku"]
 	path = module_clients/teku
