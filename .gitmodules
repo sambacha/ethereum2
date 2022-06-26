@@ -19,3 +19,12 @@
 [submodule "portal-network-specs"]
 	path = portal-network-specs
 	url = https://github.com/ethereum/portal-network-specs
+[submodule "perf_modules/bls"]
+	path = perf_modules/bls
+	url = https://github.com/herumi/bls
+[submodule "client_modules/teku"]
+	path = client_modules/teku
+	url = https://github.com/ConsenSys/teku
+[submodule "mev-builder-specs"]
+	path = mev-builder-specs
+	url = https://github.com/ethereum/builder-specs
