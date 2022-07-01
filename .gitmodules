@@ -25,6 +25,6 @@
 [submodule "client_modules/teku"]
 	path = module_clients/teku
 	url = https://github.com/ConsenSys/teku
-[submodule "mev-builder-specs"]
-	path = module_api/mev-builder
+[submodule "lib/builder-specs"]
+	path = lib/builder-specs
 	url = https://github.com/ethereum/builder-specs
