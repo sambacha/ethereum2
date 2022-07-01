@@ -160,6 +160,8 @@ paths:
               examples:
                 bellatrix:
                   $ref: '#/components/examples/signed_builder_bid'
+        '204':
+          description: No header is available.
         '400':
           description: Error response.
           content:
