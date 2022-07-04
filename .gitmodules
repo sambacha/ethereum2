@@ -28,3 +28,9 @@
 [submodule "lib/builder-specs"]
 	path = lib/builder-specs
 	url = https://github.com/ethereum/builder-specs
+[submodule "module_api/builder-spec"]
+	path = module_api/builder-spec
+	url = https://github.com/ethereum/builder-specs
+[submodule "module_api/execution-specs"]
+	path = module_api/execution-specs
+	url = https://github.com/ethereum/execution-specs

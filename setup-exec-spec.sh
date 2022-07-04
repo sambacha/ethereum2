@@ -1,0 +1,1 @@
+pip install -e ".[doc,lint,test]"
