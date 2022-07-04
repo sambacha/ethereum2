@@ -1,0 +1,12 @@
+properties:
+  data:
+    format: byte
+    type: string
+  type:
+    enum:
+      - - HEADER
+        - PENDING_LOGS
+        - PENDING_BLOCK
+        - NEW_SNAPSHOT
+    type: string
+type: object

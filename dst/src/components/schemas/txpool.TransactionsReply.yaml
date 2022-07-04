@@ -1,0 +1,7 @@
+properties:
+  rlpTxs:
+    items:
+      format: byte
+      type: string
+    type: array
+type: object

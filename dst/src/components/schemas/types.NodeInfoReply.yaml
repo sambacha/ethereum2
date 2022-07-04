@@ -1,0 +1,24 @@
+properties:
+  enode:
+    type: string
+  enr:
+    type: string
+  id:
+    type: string
+  listenerAddr:
+    type: string
+  name:
+    type: string
+  ports:
+    properties:
+      discovery:
+        format: int32
+        type: integer
+      listener:
+        format: int32
+        type: integer
+    type: object
+  protocols:
+    format: byte
+    type: string
+type: object

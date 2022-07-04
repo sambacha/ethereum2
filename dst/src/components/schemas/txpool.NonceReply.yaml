@@ -1,0 +1,7 @@
+properties:
+  found:
+    type: boolean
+  nonce:
+    format: int64
+    type: integer
+type: object

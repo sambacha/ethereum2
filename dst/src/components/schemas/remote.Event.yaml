@@ -1,0 +1,6 @@
+enum:
+  - - HEADER
+    - PENDING_LOGS
+    - PENDING_BLOCK
+    - NEW_SNAPSHOT
+type: string

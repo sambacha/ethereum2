@@ -1,0 +1,32 @@
+{
+  "name": "eth_sign",
+  "summary": "Returns an EIP-191 signature over the provided data.",
+  "params": [
+    {
+      "name": "Address",
+      "required": true,
+      "schema": {
+        "title": "hex encoded address",
+        "type": "string",
+        "pattern": "^0x[0-9,a-f,A-F]{40}$"
+      }
+    },
+    {
+      "name": "Message",
+      "required": true,
+      "schema": {
+        "title": "hex encoded bytes",
+        "type": "string",
+        "pattern": "^0x[0-9a-f]*$"
+      }
+    }
+  ],
+  "result": {
+    "name": "Signature",
+    "schema": {
+      "title": "65 hex encoded bytes",
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{512}$"
+    }
+  }
+}

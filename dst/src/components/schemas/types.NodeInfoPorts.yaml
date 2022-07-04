@@ -1,0 +1,8 @@
+properties:
+  discovery:
+    format: int32
+    type: integer
+  listener:
+    format: int32
+    type: integer
+type: object

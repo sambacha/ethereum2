@@ -1,0 +1,12 @@
+description: Reply message containing the current service version on the service side
+properties:
+  major:
+    format: int32
+    type: integer
+  minor:
+    format: int32
+    type: integer
+  patch:
+    format: int32
+    type: integer
+type: object

@@ -1,0 +1,31 @@
+properties:
+  txs:
+    items:
+      properties:
+        rlpTx:
+          format: byte
+          type: string
+        sender:
+          properties:
+            hi:
+              properties:
+                hi:
+                  format: int64
+                  type: integer
+                lo:
+                  format: int64
+                  type: integer
+              type: object
+            lo:
+              format: int32
+              type: integer
+          type: object
+        txnType:
+          enum:
+            - - PENDING
+              - QUEUED
+              - BASE_FEE
+          type: string
+      type: object
+    type: array
+type: object

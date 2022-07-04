@@ -1,0 +1,188 @@
+properties:
+  hi:
+    properties:
+      hi:
+        properties:
+          hi:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+          lo:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+        type: object
+      lo:
+        properties:
+          hi:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+          lo:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+        type: object
+    type: object
+  lo:
+    properties:
+      hi:
+        properties:
+          hi:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+          lo:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+        type: object
+      lo:
+        properties:
+          hi:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+          lo:
+            properties:
+              hi:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+              lo:
+                properties:
+                  hi:
+                    format: int64
+                    type: integer
+                  lo:
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+        type: object
+    type: object
+type: object

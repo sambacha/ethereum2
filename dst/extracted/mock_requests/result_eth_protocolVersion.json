@@ -1,0 +1,7 @@
+{
+  "name": "Protocol version",
+  "schema": {
+    "title": "version",
+    "type": "string"
+  }
+}

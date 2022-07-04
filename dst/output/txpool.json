@@ -1,0 +1,321 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI Spec for Istio APIs.",
+    "version": "txpool"
+  },
+  "components": {
+    "schemas": {
+      "txpool.AddReply": {
+        "properties": {
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "imported": {
+            "items": {
+              "enum": [
+                [
+                  "SUCCESS",
+                  "ALREADY_EXISTS",
+                  "FEE_TOO_LOW",
+                  "STALE",
+                  "INVALID",
+                  "INTERNAL_ERROR"
+                ]
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.AddRequest": {
+        "properties": {
+          "rlpTxs": {
+            "items": {
+              "format": "byte",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.AllReply": {
+        "properties": {
+          "txs": {
+            "items": {
+              "properties": {
+                "rlpTx": {
+                  "format": "byte",
+                  "type": "string"
+                },
+                "sender": {
+                  "properties": {
+                    "hi": {
+                      "properties": {
+                        "hi": {
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "lo": {
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "lo": {
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "txnType": {
+                  "enum": [
+                    [
+                      "PENDING",
+                      "QUEUED",
+                      "BASE_FEE"
+                    ]
+                  ],
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.AllRequest": {
+        "type": "object"
+      },
+      "txpool.ImportResult": {
+        "enum": [
+          [
+            "SUCCESS",
+            "ALREADY_EXISTS",
+            "FEE_TOO_LOW",
+            "STALE",
+            "INVALID",
+            "INTERNAL_ERROR"
+          ]
+        ],
+        "type": "string"
+      },
+      "txpool.NonceReply": {
+        "properties": {
+          "found": {
+            "type": "boolean"
+          },
+          "nonce": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.NonceRequest": {
+        "properties": {
+          "address": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.OnAddReply": {
+        "properties": {
+          "rplTxs": {
+            "items": {
+              "format": "byte",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.OnAddRequest": {
+        "type": "object"
+      },
+      "txpool.PendingReply": {
+        "properties": {
+          "txs": {
+            "items": {
+              "properties": {
+                "isLocal": {
+                  "type": "boolean"
+                },
+                "rlpTx": {
+                  "format": "byte",
+                  "type": "string"
+                },
+                "sender": {
+                  "properties": {
+                    "hi": {
+                      "properties": {
+                        "hi": {
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "lo": {
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "lo": {
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.StatusReply": {
+        "properties": {
+          "baseFeeCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "pendingCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "queuedCount": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.StatusRequest": {
+        "type": "object"
+      },
+      "txpool.TransactionsReply": {
+        "properties": {
+          "rlpTxs": {
+            "items": {
+              "format": "byte",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.TransactionsRequest": {
+        "properties": {
+          "hashes": {
+            "items": {
+              "properties": {
+                "hi": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "lo": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "txpool.TxHashes": {
+        "properties": {
+          "hashes": {
+            "items": {
+              "properties": {
+                "hi": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "lo": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+enum:
+  - - VALID
+    - INVALID
+    - SYNCING
+    - ACCEPTED
+    - INVALID_BLOCK_HASH
+type: string

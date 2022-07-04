@@ -1,0 +1,1196 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI Spec for Istio APIs.",
+    "version": "types"
+  },
+  "components": {
+    "schemas": {
+      "types.ExecutionPayload": {
+        "properties": {
+          "baseFeePerGas": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "blockHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "blockNumber": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "coinbase": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "extraData": {
+            "format": "byte",
+            "type": "string"
+          },
+          "gasLimit": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "gasUsed": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "logsBloom": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "parentHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "prevRandao": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "receiptRoot": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "stateRoot": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "timestamp": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "transactions": {
+            "description": "Array of transaction objects, each object is a byte list. See https://github.com/ethereum/execution-apis/blob/v1.0.0-alpha.2/src/engine/interop/specification.md",
+            "items": {
+              "format": "byte",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "types.H1024": {
+        "properties": {
+          "hi": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "lo": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "types.H128": {
+        "properties": {
+          "hi": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "lo": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "types.H160": {
+        "properties": {
+          "hi": {
+            "properties": {
+              "hi": {
+                "format": "int64",
+                "type": "integer"
+              },
+              "lo": {
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "lo": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "types.H2048": {
+        "properties": {
+          "hi": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "lo": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "types.H256": {
+        "properties": {
+          "hi": {
+            "properties": {
+              "hi": {
+                "format": "int64",
+                "type": "integer"
+              },
+              "lo": {
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "lo": {
+            "properties": {
+              "hi": {
+                "format": "int64",
+                "type": "integer"
+              },
+              "lo": {
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "types.H512": {
+        "properties": {
+          "hi": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "lo": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "types.NodeInfoPorts": {
+        "properties": {
+          "discovery": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "listener": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "types.NodeInfoReply": {
+        "properties": {
+          "enode": {
+            "type": "string"
+          },
+          "enr": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "listenerAddr": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ports": {
+            "properties": {
+              "discovery": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "listener": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "protocols": {
+            "format": "byte",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "types.PeerInfo": {
+        "properties": {
+          "caps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "connIsInbound": {
+            "type": "boolean"
+          },
+          "connIsStatic": {
+            "type": "boolean"
+          },
+          "connIsTrusted": {
+            "type": "boolean"
+          },
+          "connLocalAddr": {
+            "type": "string"
+          },
+          "connRemoteAddr": {
+            "type": "string"
+          },
+          "enode": {
+            "type": "string"
+          },
+          "enr": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "types.VersionReply": {
+        "description": "Reply message containing the current service version on the service side",
+        "properties": {
+          "major": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "minor": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "patch": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}

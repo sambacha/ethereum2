@@ -1,0 +1,12 @@
+{
+  "name": "Accounts",
+  "schema": {
+    "title": "Accounts",
+    "type": "array",
+    "items": {
+      "title": "hex encoded address",
+      "type": "string",
+      "pattern": "^0x[0-9,a-f,A-F]{40}$"
+    }
+  }
+}

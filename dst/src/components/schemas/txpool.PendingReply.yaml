@@ -1,0 +1,27 @@
+properties:
+  txs:
+    items:
+      properties:
+        isLocal:
+          type: boolean
+        rlpTx:
+          format: byte
+          type: string
+        sender:
+          properties:
+            hi:
+              properties:
+                hi:
+                  format: int64
+                  type: integer
+                lo:
+                  format: int64
+                  type: integer
+              type: object
+            lo:
+              format: int32
+              type: integer
+          type: object
+      type: object
+    type: array
+type: object

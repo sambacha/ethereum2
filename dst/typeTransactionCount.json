@@ -1,0 +1,12 @@
+{
+  "name": "Transaction count",
+  "schema": {
+    "title": "Transaction count",
+    "type": "array",
+    "items": {
+      "title": "hex encoded unsigned integer",
+      "type": "string",
+      "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$"
+    }
+  }
+}

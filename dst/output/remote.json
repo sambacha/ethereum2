@@ -1,0 +1,1002 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI Spec for Istio APIs.",
+    "version": "remote"
+  },
+  "components": {
+    "schemas": {
+      "remote.BlockReply": {
+        "properties": {
+          "blockRlp": {
+            "format": "byte",
+            "type": "string"
+          },
+          "senders": {
+            "format": "byte",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "remote.BlockRequest": {
+        "properties": {
+          "blockHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "blockHeight": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.ClientVersionReply": {
+        "properties": {
+          "nodeName": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "remote.ClientVersionRequest": {
+        "type": "object"
+      },
+      "remote.EngineForkChoiceState": {
+        "properties": {
+          "finalizedBlockHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "headBlockHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "safeBlockHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "remote.EngineForkChoiceUpdatedReply": {
+        "properties": {
+          "payloadId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "payloadStatus": {
+            "properties": {
+              "latestValidHash": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "status": {
+                "enum": [
+                  [
+                    "VALID",
+                    "INVALID",
+                    "SYNCING",
+                    "ACCEPTED",
+                    "INVALID_BLOCK_HASH"
+                  ]
+                ],
+                "type": "string"
+              },
+              "validationError": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "remote.EngineForkChoiceUpdatedRequest": {
+        "properties": {
+          "forkchoiceState": {
+            "properties": {
+              "finalizedBlockHash": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "headBlockHash": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "safeBlockHash": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "payloadAttributes": {
+            "properties": {
+              "prevRandao": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              "suggestedFeeRecipient": {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "timestamp": {
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "remote.EngineGetPayloadRequest": {
+        "properties": {
+          "payloadId": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.EnginePayloadAttributes": {
+        "properties": {
+          "prevRandao": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "suggestedFeeRecipient": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "timestamp": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.EnginePayloadStatus": {
+        "properties": {
+          "latestValidHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              [
+                "VALID",
+                "INVALID",
+                "SYNCING",
+                "ACCEPTED",
+                "INVALID_BLOCK_HASH"
+              ]
+            ],
+            "type": "string"
+          },
+          "validationError": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "remote.EngineStatus": {
+        "enum": [
+          [
+            "VALID",
+            "INVALID",
+            "SYNCING",
+            "ACCEPTED",
+            "INVALID_BLOCK_HASH"
+          ]
+        ],
+        "type": "string"
+      },
+      "remote.EtherbaseReply": {
+        "properties": {
+          "address": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "remote.EtherbaseRequest": {
+        "type": "object"
+      },
+      "remote.Event": {
+        "enum": [
+          [
+            "HEADER",
+            "PENDING_LOGS",
+            "PENDING_BLOCK",
+            "NEW_SNAPSHOT"
+          ]
+        ],
+        "type": "string"
+      },
+      "remote.LogsFilterRequest": {
+        "properties": {
+          "addresses": {
+            "items": {
+              "properties": {
+                "hi": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "lo": {
+                  "format": "int32",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "allAddresses": {
+            "type": "boolean"
+          },
+          "allTopics": {
+            "type": "boolean"
+          },
+          "topics": {
+            "items": {
+              "properties": {
+                "hi": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "lo": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "remote.NetPeerCountReply": {
+        "properties": {
+          "count": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.NetPeerCountRequest": {
+        "type": "object"
+      },
+      "remote.NetVersionReply": {
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.NetVersionRequest": {
+        "type": "object"
+      },
+      "remote.NodesInfoReply": {
+        "properties": {
+          "nodesInfo": {
+            "items": {
+              "properties": {
+                "enode": {
+                  "type": "string"
+                },
+                "enr": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "listenerAddr": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "ports": {
+                  "properties": {
+                    "discovery": {
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "listener": {
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "protocols": {
+                  "format": "byte",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "remote.NodesInfoRequest": {
+        "properties": {
+          "limit": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.PeersReply": {
+        "properties": {
+          "peers": {
+            "items": {
+              "properties": {
+                "caps": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "connIsInbound": {
+                  "type": "boolean"
+                },
+                "connIsStatic": {
+                  "type": "boolean"
+                },
+                "connIsTrusted": {
+                  "type": "boolean"
+                },
+                "connLocalAddr": {
+                  "type": "string"
+                },
+                "connRemoteAddr": {
+                  "type": "string"
+                },
+                "enode": {
+                  "type": "string"
+                },
+                "enr": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "remote.ProtocolVersionReply": {
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.ProtocolVersionRequest": {
+        "type": "object"
+      },
+      "remote.SubscribeLogsReply": {
+        "properties": {
+          "address": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "blockHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "blockNumber": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "data": {
+            "format": "byte",
+            "type": "string"
+          },
+          "logIndex": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "removed": {
+            "type": "boolean"
+          },
+          "topics": {
+            "items": {
+              "properties": {
+                "hi": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "lo": {
+                  "properties": {
+                    "hi": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "lo": {
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "transactionHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "transactionIndex": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.SubscribeReply": {
+        "properties": {
+          "data": {
+            "format": "byte",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              [
+                "HEADER",
+                "PENDING_LOGS",
+                "PENDING_BLOCK",
+                "NEW_SNAPSHOT"
+              ]
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "remote.SubscribeRequest": {
+        "properties": {
+          "type": {
+            "enum": [
+              [
+                "HEADER",
+                "PENDING_LOGS",
+                "PENDING_BLOCK",
+                "NEW_SNAPSHOT"
+              ]
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "remote.TxnLookupReply": {
+        "properties": {
+          "blockNumber": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "remote.TxnLookupRequest": {
+        "properties": {
+          "txnHash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}

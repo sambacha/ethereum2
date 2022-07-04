@@ -1,0 +1,23 @@
+{
+  "name": "eth_sendRawTransaction",
+  "summary": "Submits a raw transaction.",
+  "params": [
+    {
+      "name": "Transaction",
+      "required": true,
+      "schema": {
+        "title": "hex encoded bytes",
+        "type": "string",
+        "pattern": "^0x[0-9a-f]*$"
+      }
+    }
+  ],
+  "result": {
+    "name": "Transaction hash",
+    "schema": {
+      "title": "32 byte hex value",
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{64}$"
+    }
+  }
+}

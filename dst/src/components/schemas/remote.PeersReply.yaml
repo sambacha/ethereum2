@@ -1,0 +1,29 @@
+properties:
+  peers:
+    items:
+      properties:
+        caps:
+          items:
+            type: string
+          type: array
+        connIsInbound:
+          type: boolean
+        connIsStatic:
+          type: boolean
+        connIsTrusted:
+          type: boolean
+        connLocalAddr:
+          type: string
+        connRemoteAddr:
+          type: string
+        enode:
+          type: string
+        enr:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+    type: array
+type: object

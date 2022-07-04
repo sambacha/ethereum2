@@ -1,0 +1,8 @@
+{
+  "name": "Return data",
+  "schema": {
+    "title": "hex encoded bytes",
+    "type": "string",
+    "pattern": "^0x[0-9a-f]*$"
+  }
+}

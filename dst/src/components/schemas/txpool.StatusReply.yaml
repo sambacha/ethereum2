@@ -1,0 +1,11 @@
+properties:
+  baseFeeCount:
+    format: int32
+    type: integer
+  pendingCount:
+    format: int32
+    type: integer
+  queuedCount:
+    format: int32
+    type: integer
+type: object

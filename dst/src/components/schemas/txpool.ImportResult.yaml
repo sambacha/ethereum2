@@ -1,0 +1,8 @@
+enum:
+  - - SUCCESS
+    - ALREADY_EXISTS
+    - FEE_TOO_LOW
+    - STALE
+    - INVALID
+    - INTERNAL_ERROR
+type: string

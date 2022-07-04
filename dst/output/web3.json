@@ -1,0 +1,1171 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI Spec for Istio APIs.",
+    "version": "web3"
+  },
+  "components": {
+    "schemas": {
+      "web3.BlockNumberResponse": {
+        "properties": {
+          "block_number": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "web3.BlockRequest": {
+        "properties": {
+          "search_location": {
+            "properties": {
+              "location": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "web3.BlockSearchLocation": {
+        "properties": {
+          "location": {
+            "oneOf": [
+              {
+                "properties": {
+                  "hi": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "lo": {
+                    "properties": {
+                      "hi": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "lo": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              },
+              {
+                "format": "int64",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "web3.FullBlockResponse": {
+        "properties": {
+          "block": {
+            "properties": {
+              "base": {
+                "properties": {
+                  "coinbase": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "format": "int32",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "difficulty": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "extra_data": {
+                    "format": "byte",
+                    "type": "string"
+                  },
+                  "gas_limit": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "gas_used": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "hash": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "nonce": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "number": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "ommer_root": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "ommers": {
+                    "items": {
+                      "properties": {
+                        "hi": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "lo": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "parent_hash": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "receipt_root": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "size": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "state_root": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "timestamp": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "total_difficulty": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "transactions": {
+                "items": {
+                  "properties": {
+                    "_to": {
+                      "oneOf": [
+                        {
+                          "properties": {
+                            "hi": {
+                              "properties": {
+                                "hi": {
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "lo": {
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "lo": {
+                              "format": "int32",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      ]
+                    },
+                    "from": {
+                      "properties": {
+                        "hi": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "lo": {
+                          "format": "int32",
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "gas": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "gas_price": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "hash": {
+                      "properties": {
+                        "hi": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "lo": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "input": {
+                      "format": "byte",
+                      "type": "string"
+                    },
+                    "nonce": {
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "r": {
+                      "properties": {
+                        "hi": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "lo": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "s": {
+                      "properties": {
+                        "hi": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "lo": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "v": {
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "value": {
+                      "properties": {
+                        "hi": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "lo": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "web3.LightBlockResponse": {
+        "properties": {
+          "block": {
+            "properties": {
+              "base": {
+                "properties": {
+                  "coinbase": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "format": "int32",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "difficulty": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "extra_data": {
+                    "format": "byte",
+                    "type": "string"
+                  },
+                  "gas_limit": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "gas_used": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "hash": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "nonce": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "number": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "ommer_root": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "ommers": {
+                    "items": {
+                      "properties": {
+                        "hi": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "lo": {
+                          "properties": {
+                            "hi": {
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "lo": {
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "parent_hash": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "receipt_root": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "size": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "state_root": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "timestamp": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "total_difficulty": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "transaction_hashes": {
+                "items": {
+                  "properties": {
+                    "hi": {
+                      "properties": {
+                        "hi": {
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "lo": {
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "lo": {
+                      "properties": {
+                        "hi": {
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "lo": {
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "web3.ResolveBlockHashRequest": {
+        "properties": {
+          "block_number": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "web3.ResolveBlockHashResponse": {
+        "properties": {
+          "block_hash": {
+            "properties": {
+              "hi": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "lo": {
+                "properties": {
+                  "hi": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "lo": {
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "web3.TransactionResponse": {
+        "properties": {
+          "transaction": {
+            "properties": {
+              "_canonical_data": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "block_hash": {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "block_number": {
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "index": {
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                ]
+              },
+              "transaction": {
+                "properties": {
+                  "_to": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "hi": {
+                            "properties": {
+                              "hi": {
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "lo": {
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "lo": {
+                            "format": "int32",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    ]
+                  },
+                  "from": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "format": "int32",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "gas": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "gas_price": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "hash": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "input": {
+                    "format": "byte",
+                    "type": "string"
+                  },
+                  "nonce": {
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "r": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "s": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "v": {
+                    "format": "int32",
+                    "type": "integer"
+                  },
+                  "value": {
+                    "properties": {
+                      "hi": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "lo": {
+                        "properties": {
+                          "hi": {
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "lo": {
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+properties:
+  nodeName:
+    type: string
+type: object

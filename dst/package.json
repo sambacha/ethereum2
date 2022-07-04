@@ -1,0 +1,17 @@
+{
+  "name": "dst",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "sam bacha",
+  "license": "ISC",
+  "dependencies": {
+    "bip39": "^3.0.4",
+    "g": "^2.0.1",
+    "postman-to-openapi": "^2.4.0"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "eth_protocolVersion",
+  "summary": "Returns the current Ethereum protocol version.",
+  "params": [],
+  "result": {
+    "name": "Protocol version",
+    "schema": {
+      "title": "version",
+      "type": "string"
+    }
+  }
+}

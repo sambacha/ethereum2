@@ -1,0 +1,8 @@
+properties:
+  blockRlp:
+    format: byte
+    type: string
+  senders:
+    format: byte
+    type: string
+type: object

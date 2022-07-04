@@ -1,0 +1,17 @@
+properties:
+  errors:
+    items:
+      type: string
+    type: array
+  imported:
+    items:
+      enum:
+        - - SUCCESS
+          - ALREADY_EXISTS
+          - FEE_TOO_LOW
+          - STALE
+          - INVALID
+          - INTERNAL_ERROR
+      type: string
+    type: array
+type: object
