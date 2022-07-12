@@ -1,0 +1,24 @@
+{"accessList": {
+  "title": "accessList",
+  "type": "array",
+  "description": "EIP-2930 access list",
+  "items": {
+    "title": "Access list entry",
+    "type": "object",
+    "properties": {
+      "address": {
+        "title": "hex encoded address",
+        "type": "string",
+        "pattern": "^0x[0-9,a-f,A-F]{40}$"
+      },
+      "storageKeys": {
+        "type": "array",
+        "items": {
+          "title": "32 byte hex value",
+          "type": "string",
+          "pattern": "^0x[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}}

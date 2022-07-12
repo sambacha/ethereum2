@@ -1,0 +1,7 @@
+{"cumulativeGasUsed": {
+  "title": "cumulative gas used",
+  "type": "string",
+  "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$",
+  "description": "The sum of gas used by this transaction and all preceding transactions in the same block."
+}
+}

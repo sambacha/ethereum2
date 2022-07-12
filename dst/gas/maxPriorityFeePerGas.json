@@ -1,0 +1,7 @@
+{"maxPriorityFeePerGas": {
+  "title": "max priority fee per gas",
+  "type": "string",
+  "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$",
+  "description": "Maximum fee per gas the sender is willing to pay to miners in wei"
+}
+}

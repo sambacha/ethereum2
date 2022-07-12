@@ -1,0 +1,7 @@
+{"gasPrice": {
+  "title": "gas price",
+  "type": "string",
+  "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$",
+  "description": "The gas price willing to be paid by the sender in wei"
+}
+}

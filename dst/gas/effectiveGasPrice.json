@@ -1,0 +1,7 @@
+{            "effectiveGasPrice": {
+              "title": "effective gas price",
+              "type": "string",
+              "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$",
+              "description": "The actual value per gas deducted from the senders account. Before EIP-1559, this is equal to the transaction's gas price. After, it is equal to baseFeePerGas + min(maxFeePerGas - baseFeePerGas, maxPriorityFeePerGas)."
+            }
+          }

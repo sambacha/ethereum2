@@ -1,0 +1,83 @@
+{
+  "type": "object",
+  "title": "EIP-1559 transaction.",
+  "required": [
+    "type",
+    "nonce",
+    "gas",
+    "value",
+    "input",
+    "maxFeePerGas",
+    "maxPriorityFeePerGas",
+    "chainId",
+    "accessList"
+  ],
+  "properties": {
+    "type": {
+      "title": "type",
+      "type": "string",
+      "pattern": "^0x([0-9,a-f,A-F]?){1,2}$"
+    },
+    "nonce": {
+      "title": "nonce",
+      "type": "string",
+      "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$"
+    },
+    "to": {
+      "title": "to address",
+      "type": "string",
+      "pattern": "^0x[0-9,a-f,A-F]{40}$"
+    },
+    "gas": {
+      "title": "gas limit",
+      "type": "string",
+      "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$"
+    },
+    "value": {
+      "title": "value",
+      "type": "string",
+      "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$"
+    },
+    "input": {
+      "title": "input data",
+      "type": "string",
+      "pattern": "^0x[0-9a-f]*$"
+    },
+    "maxPriorityFeePerGas": {
+      "title": "max priority fee per gas",
+      "type": "string",
+      "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$",
+      "description": "Maximum fee per gas the sender is willing to pay to miners in wei"
+    },
+    "maxFeePerGas": {
+      "title": "max fee per gas",
+      "type": "string",
+      "pattern": "^0x([1-9a-f]+[0-9a-f]*|0)$",
+      "description": "The maximum total fee per gas the sender is willing to pay (includes the network / base fee and miner / priority fee) in wei"
+    },
+    "accessList": {
+      "title": "accessList",
+      "type": "array",
+      "description": "EIP-2930 access list",
+      "items": {
+        "title": "Access list entry",
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "hex encoded address",
+            "type": "string",
+            "pattern": "^0x[0-9,a-f,A-F]{40}$"
+          },
+          "storageKeys": {
+            "type": "array",
+            "items": {
+              "title": "32 byte hex value",
+              "type": "string",
+              "pattern": "^0x[0-9a-f]{64}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}
